@@ -5,12 +5,13 @@ import { KAKAO_COLOR } from '@/constants/color'
 import { GOOGLE_LOGIN_LINK, KAKAO_LOGIN_LINK } from '@/constants/link'
 import Link from 'next/link'
 
-export const BuyerLoginComponent = () => {
+const FindAccountComponent = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isTyped, setIsTyped] = useState(false);
 
   const handleEmailChange = (e : any) => {
     const newEmail = e.target.value;
@@ -18,6 +19,8 @@ export const BuyerLoginComponent = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setIsEmailValid(emailRegex.test(newEmail));
+
+    setIsTyped(true)
   };
 
   const handlePasswordChange = (e : any) => {
@@ -27,6 +30,8 @@ export const BuyerLoginComponent = () => {
     setIsPasswordValid(passwordRegex.test(newPassword));
 
     setPassword(newPassword);
+
+    setIsTyped(true)
   };
 
   const handleLoginClick = () => {
@@ -65,13 +70,13 @@ export const BuyerLoginComponent = () => {
         </div>
         <div className='flex items-center gap-[20px]'>
           <button
-            className={`w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm ${(isEmailValid && isPasswordValid) ? 'hover:bg-blue-100' : ''}`}
+            className={`w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm ${(isEmailValid && isPasswordValid && isTyped) ? 'hover:bg-blue-100' : ''}`}
             onClick={handleLoginClick}
-            disabled={(!isEmailValid || !isPasswordValid)}
+            disabled={(!isEmailValid || !isPasswordValid || !isTyped)}
           >
             <span className='font-semibold text-black'>로그인</span>
           </button>
-          <Link href={'/login/buyersignup'} className='w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm hover:bg-blue-100'>
+          <Link href={'/signup'} className='w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm hover:bg-blue-100'>
             <span className='font-semibold text-black'>회원가입</span>
           </Link>
         </div>
@@ -110,82 +115,4 @@ export const BuyerLoginComponent = () => {
   )
 }
 
-export const SellerLoginComponent = () => {
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isEmailValid, setIsEmailValid] = useState(true);
-  const [isPasswordValid, setIsPasswordValid] = useState(true);
-
-  const handleEmailChange = (e : any) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    setIsEmailValid(emailRegex.test(newEmail));
-  };
-
-  const handlePasswordChange = (e : any) => {
-    const newPassword = e.target.value;
-
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
-    setIsPasswordValid(passwordRegex.test(newPassword));
-
-    setPassword(newPassword);
-  };
-
-  const handleLoginClick = () => {
-    if (isEmailValid) {
-      console.log('로그인!');
-    } else {
-      console.log('유효한 이메일을 입력하세요.');
-    }
-  };
-
-  return (
-    <div className='flex-1 p-[50px]'>
-      <section className='w-full flex flex-col itmes-center justify-center gap-[20px] py-[50px]'>
-        <h2 className='text-center text-[22px] font-semibold'>이메일 로그인</h2>
-        <div className='flex flex-col items-center'>
-          <p className='w-[100%] text-start text-[13px] mb-[5px]'>이메일</p>
-          <input
-            type="email"
-            className='w-[100%] h-[40px] text-black p-[10px] border focus:border-purple-400 outline-none'
-            placeholder='example@weavers.com'
-            value={email}
-            onChange={handleEmailChange}
-          />
-          {!isEmailValid && <p className='text-red-500 w-[100%] text-start text-[13px] mt-[10px]'>이메일이 형식이 올바르지 않습니다.</p>}
-        </div>
-        <div className='flex flex-col items-center'>
-          <p className='w-[100%] text-start text-[13px] mb-[5px]'>비밀번호</p>
-          <input
-            type="password"
-            className='w-[100%] h-[40px] text-slate-500 p-[10px] border focus:border-purple-400 outline-none'
-            placeholder='비밀번호 8자 이상'
-            value={password}
-            onChange={handlePasswordChange}
-          />
-          {!isPasswordValid && <p className='text-red-500 w-[100%] text-start text-[13px] mt-[10px]'>비밀번호 8자 이상, 대소문자, 숫자, 특수문자가 포함되어있지 않습니다.</p>}
-        </div>
-        <div className='flex items-center gap-[20px]'>
-          <button
-            className={`w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm ${(isEmailValid && isPasswordValid) ? 'hover:bg-blue-100' : ''}`}
-            onClick={handleLoginClick}
-            disabled={(!isEmailValid || !isPasswordValid)}
-          >
-            <span className='font-semibold text-black'>로그인</span>
-          </button>
-          <Link href={'/login/sellersignup'} className='w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm hover:bg-blue-100'>
-            <span className='font-semibold text-black'>회원가입</span>
-          </Link>
-        </div>
-      </section>
-      <section className='w-full flex items-center justify-center'>
-        <Link href={'/find_account'}>
-          <p>이메일 / 비밀번호 찾기 </p>
-        </Link>
-      </section>
-    </div>
-  )
-}
+export default FindAccountComponent
