@@ -27,7 +27,7 @@ export default async function CategroyPage( parmas:{ params: { category: string 
     const category = parmas.params.category
 
     return (
-        <main className="Main flex flex-col bg-white w-full min-h-[1300px] pt-[80px]">
+        <main className="Main flex flex-col w-full min-h-[1300px] pt-[80px]">
             <CategoryName categoryParm={category} />
             <CategroyMenu />
         </main>
