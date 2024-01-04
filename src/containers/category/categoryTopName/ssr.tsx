@@ -7,7 +7,7 @@ type Data = {
 export default function CategoryName({ categoryParm }: Data) {
 
     return (
-        <section className='w-full h-[150px] bg-yellow-300 p-[35px]'>
+        <section className='w-full h-[106px] px-[35px]'>
             <CategoryNameComponent categoryParma={categoryParm} />
         </section>
     );
