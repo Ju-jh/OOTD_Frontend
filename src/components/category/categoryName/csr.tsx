@@ -48,7 +48,7 @@ export default function CategoryNameComponent({ categoryParma }: Data) {
           <p>{isList}</p>
           {isButton == true ? <FontAwesomeIcon className="mx-[10px] mt-[3px]" icon={faCaretDown} /> : <FontAwesomeIcon className="mx-[10px] mt-[5px]" icon={faCaretUp} />}
         </button>
-        <ul className={isButton == false ? "absolute w-[120px] mt-[25px] right-[35px] border-solid border-1 rounded-md bg-white" : "hidden"}>
+        <ul className={isButton == false ? "absolute w-[120px] mt-[25px] right-[35px] border-solid border-1 rounded-md" : "hidden"}>
           <li className={`p-[5px] cursor-pointer hover:font-bold ${isList == "인기순" ? "font-bold":""}`} onClick={() => listBtn("인기순")}>인기순</li>
           <li className={`p-[5px] cursor-pointer hover:font-bold ${isList == "최신순" ? "font-bold":""}`} onClick={() => listBtn("최신순")}>최신순</li>
           <li className={`p-[5px] cursor-pointer hover:font-bold ${isList == "장바구니 많은 순" ? "font-bold":""}`} onClick={() => listBtn("장바구니 많은 순")}>장바구니 많은 순</li>

@@ -39,6 +39,15 @@ export default function CategoryMenuBarComponent() {
         }
     }
 
+    const priceCheackBox = (target: EventTarget) => {
+        const checkboxes = document.getElementsByName('price') as NodeListOf<HTMLInputElement>;
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] !== target) {
+                checkboxes[i].checked = false;
+            }
+        }
+    }
+
 
     return (
         <div className="w-[25%] bg-blue-200 text-[15px]">
@@ -75,7 +84,7 @@ export default function CategoryMenuBarComponent() {
                     {isBrand == true ? <FontAwesomeIcon className="py-[15px]" icon={faChevronUp} /> : <FontAwesomeIcon className="py-[15px]" icon={faChevronDown} />}
                 </div>
                 <div className={`${isBrand == false ? "hidden" : ""}`}>
-                    <input type="text" name="" id="" />
+                    <input type="text" name="" value="1" />
                 </div>
             </div>
             <div className="bg-green-200 w-full border-b border-gray-400">
@@ -150,16 +159,16 @@ export default function CategoryMenuBarComponent() {
                 </div>
                 <div className={`flex flex-col ${isPrice == false ? "hidden" : ""}`}>
                     <div>
-                        <input type="checkbox" name="" id="" />30%이하 세일
+                        <input onClick={(e) => priceCheackBox(e.target)} type="checkbox" name="price" value="1" />30%이하 세일
                     </div>
                     <div>
-                        <input type="checkbox" name="" id="" />30% ~ 50% 세일
+                        <input onClick={(e) => priceCheackBox(e.target)} type="checkbox" name="price" value="2" />30% ~ 50% 세일
                     </div>
                     <div>
-                        <input type="checkbox" name="" id="" />50% ~ 70% 세일
+                        <input onClick={(e) => priceCheackBox(e.target)} type="checkbox" name="price" value="3" />50% ~ 70% 세일
                     </div>
                     <div>
-                        <input type="checkbox" name="" id="" />70%이상 세일
+                        <input onClick={(e) => priceCheackBox(e.target)} type="checkbox" name="price" value="4" />70%이상 세일
                     </div>
                 </div>
             </div>
