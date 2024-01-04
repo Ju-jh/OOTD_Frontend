@@ -80,6 +80,11 @@ const LoginComponent = () => {
             <span className='font-semibold text-black'>회원가입</span>
           </Link>
         </div>
+        <div className='w-[100%] flex items-center justify-center mt-[20px]'>
+          <Link href={'/find_account'} className='hover:underline'>
+            <p>이메일로 비밀번호 찾기 / 변경 </p>
+          </Link>
+        </div>
       </section>
       <section className='flex flex-col gap-[20px] border-t-2 py-[50px]'>
           <Link href={GOOGLE_LOGIN_LINK}>
@@ -94,8 +99,7 @@ const LoginComponent = () => {
           </Link>
           <Link href={KAKAO_LOGIN_LINK}>
             <button 
-              className='w-full h-[60px] flex items-center justify-center  rounded-md shadow-md hover:bg-blue-100'
-              style={{backgroundColor : KAKAO_COLOR}}
+              className='w-full h-[60px] flex items-center justify-center  rounded-md shadow-md bg-[#fae302] hover:bg-[#ffed49]'
             >
               <div className='inline-block mr-[10px]'>
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 48 48">
@@ -105,11 +109,6 @@ const LoginComponent = () => {
               <span className='font-semibold text-black'>카카오로 계속하기</span>
             </button>
           </Link>
-      </section>
-      <section className='w-full flex items-center justify-center'>
-        <Link href={'/find_account'}>
-          <p>이메일로 비밀번호 찾기 </p>
-        </Link>
       </section>
     </div>
   )
