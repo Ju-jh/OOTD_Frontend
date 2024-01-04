@@ -1,11 +1,11 @@
-import LoginContainer from '@/containers/login/ssr';
+import SignUpContainer from '@/containers/signup/ssr';
 
-export default async function LoginPage() {
+export default async function SignUpPage() {
 
 
   return(
     <main className='Main flex flex-col items-center justify-center  w-full min-h-[1150px] pt-[80px]'>
-      <LoginContainer/>
+      <SignUpContainer/>
     </main>
   )
 }
