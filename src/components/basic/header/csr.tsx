@@ -45,22 +45,22 @@ export default function Header() {
             onClick={toggleDarkMode}
             style={{zIndex:5}}
           >
-            <FontAwesomeIcon icon={faSun} className='w-[17px] h-[17px] text-black'/>
+            <FontAwesomeIcon icon={faSun} className='w-[17px] h-[17px] text-[17px] text-black'/>
           </button>
           <button
             className={`w-[50px] h-[30px] flex items-center justify-center transition-all rounded-xl  `}
             onClick={toggleDarkMode}
             style={{zIndex:5}}
           >
-            <FontAwesomeIcon icon={faMoon} className='w-[17px] h-[17px] text-black'/>
+            <FontAwesomeIcon icon={faMoon} className='w-[17px] h-[17px] text-[17px] text-black'/>
           </button>
         </div>
       </div>
       <div className='flex w-[200px] h-full items-center justify-between'>
-        <Link href={'/search'}><FontAwesomeIcon icon={faMagnifyingGlass} className='w-[21px] h-[21px] hover:text-blue-500'/></Link>
-        <Link href={'/likes'}><FontAwesomeIcon icon={faHeart} className='w-[21px] h-[21px] hover:text-red-500'/></Link>
-        <Link href={'/cart'}><FontAwesomeIcon icon={faCartShopping} className='w-[21px] h-[21px] hover:text-blue-500'/></Link>
-        <Link href={'/login'}><FontAwesomeIcon icon={faUser} className='w-[21px] h-[21px] hover:text-blue-500'/></Link>
+        <Link href={'/search'}><FontAwesomeIcon icon={faMagnifyingGlass} className='w-[21px] h-[21px] text-[21px] hover:text-blue-500'/></Link>
+        <Link href={'/likes'}><FontAwesomeIcon icon={faHeart} className='w-[21px] h-[21px] text-[21px] hover:text-red-500'/></Link>
+        <Link href={'/mycart'}><FontAwesomeIcon icon={faCartShopping} className='w-[21px] h-[21px] text-[21px] hover:text-blue-500'/></Link>
+        <Link href={'/login'}><FontAwesomeIcon icon={faUser} className='w-[21px] h-[21px] text-[21px] hover:text-blue-500'/></Link>
       </div>
     </header>
   )

@@ -3,6 +3,7 @@
 
 'use client'
 
+import { EVENT_COLOR } from '@/constants/color';
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
@@ -42,7 +43,7 @@ export default function CategoryNameComponent({ categoryParma }: Data) {
     <div className="flex justify-between place-items-center w-full h-[106px] border-solid border-b-2 border-black">
       <p className="text-[24px] font-bold">{categoryParma}</p>
       <div className="flex text-[16px]">
-        <button className="text-violet-600">가격 낮은순으로 보기</button>
+        <button style={{ color : EVENT_COLOR }}>가격 낮은순으로 보기</button>
         <div className="w-[1px] h-[20px] bg-gray-200 mx-[10px]"></div>
         <button className="flex" onClick={iconBtn}>
           <p>{isList}</p>

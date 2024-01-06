@@ -50,8 +50,8 @@ export default function CategoryMenuBarComponent() {
 
 
     return (
-        <div className="w-[25%] bg-blue-200 text-[15px]">
-            <div className="bg-green-200 w-full border-y border-gray-400">
+        <div className="w-[25%] text-[15px]">
+            <div className=" w-full border-y border-gray-400">
                 <div className="flex justify-between" onClick={() => meueBarHidden(1)}>
                     <div className="py-[15px] font-bold">
                         카테고리
@@ -59,7 +59,7 @@ export default function CategoryMenuBarComponent() {
                     {isCategory == true ? <FontAwesomeIcon className="py-[15px]" icon={faChevronUp} /> : <FontAwesomeIcon className="py-[15px]" icon={faChevronDown} />}
                 </div>
                 <div className={`${isCategory == false ? "hidden" : ""}`}>
-                    <ul>
+                    <ul className=''>
                         <li className="mb-[20px]">outer</li>
                         <li className="mb-[20px]">top</li>
                         <li className="mb-[20px]">pants</li>

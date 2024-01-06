@@ -1,9 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { KAKAO_COLOR } from '@/constants/color'
-import { GOOGLE_LOGIN_LINK, KAKAO_LOGIN_LINK } from '@/constants/link'
-import Link from 'next/link'
 
 const SignUpComponent = () => {
 
