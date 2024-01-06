@@ -41,7 +41,7 @@ export function DarkModeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
-      <div className={`transition-all duration-50 ${darkMode ? 'bg-[#3a3a3a] text-[#e1e1e1]' : `bg-[#f7f8f9] text-[#000000]`}`}>
+      <div className={`transition-all duration-50 ${darkMode ? 'bg-[#3a3a3a] text-[#e1e1e1]' : `bg-[#ffffff] text-[#000000]`}`}>
         {children}
       </div>
     </DarkModeContext.Provider>
