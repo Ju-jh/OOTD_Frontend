@@ -2,8 +2,8 @@
 // use client 쓰지 마세요.
 // 이기웅 작성.
 
-import CategroyMenu from "@/containers/category/categoryMenu/ssr";
-import CategoryName from "@/containers/category/categoryTopName/ssr";
+import CategroyMenuContainer from "@/containers/category/categoryMenu/ssr";
+import CategoryNameContainer from "@/containers/category/categoryTopName/ssr";
 
 async function fetchCategoryServerRenderedData() {
     // const response = await fetch('api-endpoint');
@@ -27,9 +27,9 @@ export default async function CategroyPage( parmas:{ params: { category: string 
     const category = parmas.params.category
 
     return (
-        <main className="Main flex flex-col w-full min-h-[1300px] pt-[80px]">
-            <CategoryName categoryParm={category} />
-            <CategroyMenu />
+        <main className="Main flex flex-col w-full min-h-[1300px] pt-[80px] px-[15%]">
+            <CategoryNameContainer categoryParm={category} />
+            <CategroyMenuContainer />
         </main>
     )
 

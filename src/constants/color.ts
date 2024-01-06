@@ -12,3 +12,4 @@ export const FOOTER_COLOR = '#f7f8f9';
 export const MENUBOX_COLOR = '#F6F7F8';
 export const KAKAO_COLOR = '#fae302';
 export const EVENT_COLOR = '#7732FF';
+export const STAR_COLOR = `#fabe23`;

@@ -4,10 +4,10 @@ type Data = {
     categoryParm: string;
 }
 
-export default function CategoryName({ categoryParm }: Data) {
+export default function CategoryNameContainer({ categoryParm }: Data) {
 
     return (
-        <section className='w-full h-[106px] px-[35px]'>
+        <section className='w-full h-[106px]'>
             <CategoryNameComponent categoryParma={categoryParm} />
         </section>
     );
