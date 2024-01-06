@@ -3,13 +3,11 @@
 
 'use client'
 
-import Link from "next/link";
-
-export default function CategoryListComponent(){
+export default function ItemDetailComponent(){
 
     return (
         <div className="w-[65%] bg-red-200">
-            <Link href={"/detail/1"}>상세 페이지</Link>
+
         </div>
     );
 }
