@@ -35,7 +35,7 @@ async function fetchProductRankingServerRenderedData() {
   const ProductRankingData = [
     {
       type: 'popular',
-      desc: '위버스몰 인기상품'
+      desc: '오오티디 인기상품'
     },
     {
       type: 'discount',

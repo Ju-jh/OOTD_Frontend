@@ -8,8 +8,8 @@ import { DarkModeProvider } from '@/hooks/context/darkMode'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Weavers Mall | 위버스 온라인 쇼핑몰',
-  description: 'Discover a seamless and delightful online shopping experience at Weavers Mall. Explore our diverse catalog of products with detailed information, images, and prices. Enjoy secure user authentication, manage your shopping cart, and stay updated on order history and shipments. Find your desired items quickly with our search functionality.',
+  title: 'OOTD | 오오티디 온라인 쇼핑몰',
+  description: 'Discover a seamless and delightful online shopping experience at OOTD Mall. Explore our diverse catalog of products with detailed information, images, and prices. Enjoy secure user authentication, manage your shopping cart, and stay updated on order history and shipments. Find your desired items quickly with our search functionality.',
 }
 
 export default function RootLayout({

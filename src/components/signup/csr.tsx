@@ -89,7 +89,7 @@ const SignUpComponent = () => {
             <input
               type="email"
               className='w-[100%] h-[40px] text-black p-[10px] border focus:border-purple-400 outline-none'
-              placeholder='example@weavers.com'
+              placeholder='example@ootd.com'
               value={email}
               onChange={handleEmailChange}
             />

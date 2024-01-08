@@ -26,9 +26,9 @@ export default function Header() {
         <Link href={'/'}>
           {
             darkMode ? 
-              <Image src={'/images/components/header/darkThemeLogo.png'} alt='logoImage' width={50} height={50} style={{width:'auto', height: 'auto'}}/>
+              <Image src={'/images/components/header/darkThemeLogo.png'} alt='logoImage' width={90} height={60} />
               :
-              <Image src={'/images/components/header/lightThemeLogo.png'} alt='logoImage' width={50} height={50} style={{width:'auto', height: 'auto'}}/>
+              <Image src={'/images/components/header/lightThemeLogo.png'} alt='logoImage' width={90} height={60} />
             }
         </Link>
         <div
