@@ -1,4 +1,4 @@
-import MyPageContainer from '@/containers/mypage/ssr';
+import MyPageContainer from '@/containers/mypage/csr';
 
 export default async function MyPage() {
 

@@ -1,16 +1,38 @@
 'use client'
 
 import { useDarkMode } from '@/hooks/context/darkMode'
+import { useAuth } from '@/hooks/context/isLogined'
+import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 
 export const MyBasicInfoComponent = () => {
 
-  const {darkMode} = useDarkMode()
+  const { darkMode } = useDarkMode()
+  const { setIsLogined } = useAuth()
 
-  return(
+  const clickLogoutBtn = () => {
+      axios
+      .get('/api/logout', {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+        .then((response) => {
+          if (response) {
+            setIsLogined(false)
+            window.location.href = "http://localhost:3000";
+          }
+      })
+      .catch(() => {
+      });
+  }
+
+
+  return (    
     <div className='mx-auto w-[450px] min-h-[250px] mt-[100px] mb-[40px] px-[40px]'>
       <div className='flex items-center justify-between px-[20px] relative'>
         <button className=' rounded-full overflow-hidden bg-[#f3f6f6]'>
@@ -22,6 +44,12 @@ export const MyBasicInfoComponent = () => {
           <p>고객님과 OOTD는 <span className='font-bold'>반가운 사이</span>입니다.</p>
         </div>
       </div>
+      <button
+        className={`w-[100%] h-[40px] rounded-md ${darkMode ? 'bg-[#121212]' : 'bg-[#F7F8F9]'} text-[14px] mt-[35px]`}
+        onClick={clickLogoutBtn}
+      >
+        로그아웃
+      </button>
       <div className={`w-[100%] h-[100px] mt-[40px] ${darkMode ? 'bg-[#121212]' : 'bg-[#F7F8F9]'}  flex items-center justify-center gap-[50px] rounded-md`}>
         <button className=''>
           <p className='font-bold'>O money</p>
@@ -32,8 +60,7 @@ export const MyBasicInfoComponent = () => {
           <p className='text-[14px]'>0<span>건</span></p>
         </button>
       </div>
-    </div>
-  )
+    </div>)
 }
 
 export const MyPageInfoComponent = () => {
