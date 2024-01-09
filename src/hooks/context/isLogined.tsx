@@ -1,33 +1,69 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+  SetStateAction,
+  Dispatch,
+} from "react";
 
-interface IsLoginedContext {
+interface AuthContextProps {
   isLogined: boolean;
+  email: string;
+  photo: string;
+  loginPlatform: string;
+  setIsLogined: Dispatch<SetStateAction<boolean>>;
 }
 
-const IsLoginedContext = createContext<IsLoginedContext | undefined>(undefined);
 
-export function IsLoginedProvider({ children }: { children: React.ReactNode }) {
-  const [isLogined, setIsLogined] = useState(false);
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [isLogined, setIsLogined] = useState<boolean>(false);
+  const [email, setEmail] = useState('');
+  const [photo, setPhoto] = useState('/photo.png');
+  const [loginPlatform, setLoginPlatform] = useState('')
   useEffect(() => {
-
-
-    setIsLogined(true);
-  }, []);
+    axios
+      .post('/api/cookie',{} , {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log(response.data.user.email)
+        if (response.data && response.data.user.isLogined) {
+          setIsLogined(response.data.user.isLogined);
+          setEmail(response.data.user.email)
+          setPhoto(response.data.user.photo)
+          setLoginPlatform(response.data.user.loginPlatform)
+        } else {
+          setIsLogined(false);
+        }
+      })
+      .catch(() => {
+        setIsLogined(false);
+      });
+  }, [isLogined, photo]);
 
   return (
-    <IsLoginedContext.Provider value={{ isLogined }}>
-        {children}
-    </IsLoginedContext.Provider>
+    <AuthContext.Provider value={{ isLogined, setIsLogined, email, photo, loginPlatform }}>
+      {children}
+    </AuthContext.Provider>
   );
-}
+};
 
-export const useLoginContext = () => {
-  const context = useContext(IsLoginedContext);
-  if (context === undefined) {
-    throw new Error("useLoginContext must be used within a IsLoginedProvider");
+export const useAuth = (): AuthContextProps => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
