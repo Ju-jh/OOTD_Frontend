@@ -4,8 +4,9 @@ import { EVENT_COLOR } from '@/constants/color'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDarkMode } from '@/hooks/context/darkMode';
+import axios from 'axios'
 
 
 const MyCartComponent = () => {
@@ -35,6 +36,23 @@ const MyCartComponent = () => {
 
   console.log(checkedCount)
 
+  useEffect(() => {
+    axios
+      .get(`api/cart/view`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log("aaa",response.data);
+      })
+      .catch((error) => {
+        console.error("API 호출 중 오류 발생:", error);
+      });
+  })
+
+
   return (
     <div className='flex-1 p-[50px]'>
       <section className='w-full h-full flex flex-col gap-[20px]  '>
@@ -48,19 +66,19 @@ const MyCartComponent = () => {
               <span>668,330</span>
               <span>원</span>
             </div>
-            <button className={`w-[110px] h-[50px] flex items-center border ${ darkMode ? 'border-[#CFD5DB]' :'border-[#CFD5DB]'} rounded-md justify-center text-[14px] font-semibold`}>
-              <span>선택 삭제</span> 
-              <span className='ml-[3px]'>(</span> 
+            <button className={`w-[110px] h-[50px] flex items-center border ${darkMode ? 'border-[#CFD5DB]' : 'border-[#CFD5DB]'} rounded-md justify-center text-[14px] font-semibold`}>
+              <span>선택 삭제</span>
+              <span className='ml-[3px]'>(</span>
               <span>{checkedCount}</span>
-              <span className='mr-[3px]'>)</span> 
+              <span className='mr-[3px]'>)</span>
             </button>
           </div>
           <ul className={`w-[100%]  border ${darkMode ? 'border-[#121212]' : 'border-[#dde0e3]'}`}>
             <li className={`flex w-[100%] h-[70px] ${darkMode ? 'bg-[#121212] border-[#121212]' : 'bg-[#F7F8F9] border-[#dde0e3]'} border-b`}>
               <div className='relative w-[5%] h-[100%] flex items-center justify-center text-[#aeb5bb]  '>
-                <input type="checkbox" name="" id="CheckAllCartItem" checked={allChecked} onChange={handleCheckAllChange} className='relative hover:default:ring-2 border cursor-pointer border-[#aeb5bb] checked:border-none w-[25px] h-[25px] appearance-none rounded-sm checked:bg-[#7732FF]'/>
+                <input type="checkbox" name="" id="CheckAllCartItem" checked={allChecked} onChange={handleCheckAllChange} className='relative hover:default:ring-2 border cursor-pointer border-[#aeb5bb] checked:border-none w-[25px] h-[25px] appearance-none rounded-sm checked:bg-[#7732FF]' />
                 <label htmlFor="CheckAllCartItem" className="absolute cursor-pointer z-10  ">
-                  <FontAwesomeIcon icon={faCheck} className='w-[15px] h-[15px] text-[15px] checked:text-white'/>
+                  <FontAwesomeIcon icon={faCheck} className='w-[15px] h-[15px] text-[15px] checked:text-white' />
                 </label>
               </div>
               <div className={`w-[40%] h-[100%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#3a3a3a]' : 'border-l-[#dde0e3]'} `}>
@@ -85,18 +103,18 @@ const MyCartComponent = () => {
             {testArray.map((item, index) => (
               <li key={index} className={`w-[100%] h-[150px] flex items-center border-b ${darkMode ? 'border-b-[#121212]' : 'border-b-[#dde0e3]'}`}>
                 <div className='w-[5%] h-[100%] flex items-center justify-center text-[#aeb5bb]  '>
-                  <input type="checkbox" name="" id={`item${index}`} checked={checkedItems[index]} onChange={() => handleItemCheckChange(index)} className='relative cursor-pointer hover:default:ring-2 border border-[#aeb5bb] checked:border-none w-[25px] h-[25px] appearance-none rounded-sm checked:bg-[#7732FF]'/>
+                  <input type="checkbox" name="" id={`item${index}`} checked={checkedItems[index]} onChange={() => handleItemCheckChange(index)} className='relative cursor-pointer hover:default:ring-2 border border-[#aeb5bb] checked:border-none w-[25px] h-[25px] appearance-none rounded-sm checked:bg-[#7732FF]' />
                   <label htmlFor={`item${index}`} className="absolute cursor-pointer z-10  ">
-                    <FontAwesomeIcon icon={faCheck} className='w-[15px] h-[15px] text-[15px] checked:text-white'/>
+                    <FontAwesomeIcon icon={faCheck} className='w-[15px] h-[15px] text-[15px] checked:text-white' />
                   </label>
                 </div>
                 <div className={`w-[40%] h-[100%] flex items-center justify-between border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}  p-[30px]`}>
                   <div className='w-[90px] h-[100%]'>
-                    <Image src="/images/components/mycart/item1.png" alt="itemImage" width="90" height="90"/>
+                    <Image src="/images/components/mycart/item1.png" alt="itemImage" width="90" height="90" />
                   </div>
                   <div className='w-[240px] h-[100%] flex flex-col items-start justify-center'>
                     <span className='font-bold'>Herno Laminar</span>
-                    <span>클라우디아 여성 패딩 블랙{ index }</span>
+                    <span>클라우디아 여성 패딩 블랙{index}</span>
                   </div>
                   <div className='w-[260px] h-[100%] bg-red-500'>
 
@@ -107,7 +125,7 @@ const MyCartComponent = () => {
                 </div>
                 <div className={`w-[10%] h-[40%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'} text-[14px]`}>
                   <span className=''>최대</span>
-                  <span style={{color:EVENT_COLOR}}>
+                  <span style={{ color: EVENT_COLOR }}>
                     16,835<span>원</span>
                   </span>
                 </div>
@@ -118,10 +136,10 @@ const MyCartComponent = () => {
                   <span className='text-[#858788]'>
                     689,000<span>원</span>
                   </span>
-                  <span style={{color:EVENT_COLOR}}>
+                  <span style={{ color: EVENT_COLOR }}>
                     -20,670<span>원</span>
                   </span>
-                  <span style={{color:EVENT_COLOR}}>
+                  <span style={{ color: EVENT_COLOR }}>
                     (쿠폰할인)
                   </span>
                 </div>
@@ -130,7 +148,7 @@ const MyCartComponent = () => {
                 </div>
                 <div className={`w-[10%] h-[50%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}`}>
                   <button className='w-[80px] h-[50px] flex items-center border border-[#CFD5DB] rounded-md justify-center text-[14px] font-semibold'>
-                    <span>삭제</span>  
+                    <span>삭제</span>
                   </button>
                 </div>
               </li>

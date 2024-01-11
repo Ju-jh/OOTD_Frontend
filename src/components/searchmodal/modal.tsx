@@ -3,13 +3,14 @@
 
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faCaretDown, faCaretUp, faCartShopping, faHeart, faMagnifyingGlass, faMinus, faMoon, faSun, faUser, faX, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { MENUBOX_COLOR } from '@/constants/color'
 import { useDarkMode } from '@/hooks/context/darkMode'
+import { json } from 'stream/consumers'
 
 
 export default function SearchModal(props: { showModal: any }) {
@@ -18,8 +19,31 @@ export default function SearchModal(props: { showModal: any }) {
 
   const { darkMode, toggleDarkMode } = useDarkMode();
   const [isRank, setIsRank] = useState("1")
+  const [isSearch, isSetSearch] = useState("")
+  const [isSearchList, setIsSearchList] = useState<string[]>([])
 
-  const searchList = ["2024신년세일", "2", "2024신년세일", "2", "2024신년세일", "2", "2024신년세일", "2", "2024신년세일", "2"]
+  const searchListTest = ["2024신년세일", "2", "2024신년세일", "2", "2024신년세일", "2", "2024신년세일", "2", "2024신년세일", "2"]
+
+  const searchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    isSetSearch(e.target.value);
+    console.log(isSearch);
+  };
+
+  const searchList1 = (searchName: string) => {
+    const searchList = localStorage.getItem('search')
+    // setIsSearchList(searchList)
+    // searchList.push(searchName)
+    // localStorage.setItem('search', JSON.stringify(searchList))
+  }
+
+
+  useEffect(() => {
+    const searchList = localStorage.getItem('search')
+    if (!searchList) {
+      localStorage.setItem('search', JSON.stringify([]))
+    }
+    searchList1("우왕")
+  }, [])
 
   return (
     <div className='absolute w-full top-0 left-0 bg-white'>
@@ -39,7 +63,7 @@ export default function SearchModal(props: { showModal: any }) {
         </div>
         <div className='border h-[50px] leading-[50px] px-[15px] text-[24px]'>
           <FontAwesomeIcon className='h-[24px] w-[24px] mr-[5px]' icon={faMagnifyingGlass} />
-          <input className='w-[350px] h-[24px]' type="text" name="" id="" />
+          <input className='outline-none w-[350px] h-[24px]' onChange={e => searchInputChange(e)} type="text" name="" id="" value={isSearch} />
         </div>
         <div onClick={showModal} className='flex h-full items-center justify-between cursor-pointer'>
           <FontAwesomeIcon className='h-[28px] w-[28px] text-[28px]' icon={faXmark} />
@@ -52,7 +76,7 @@ export default function SearchModal(props: { showModal: any }) {
             <button className='text-[12px] text-gray-300 mr-[5px]'>모두 삭제</button>
           </div>
           <div className='flex flex-wrap'>
-            {searchList.map((value, index) => {
+            {isSearchList.map((value, index) => {
               return (
                 <div key={index} className='flex bg-gray-300 h-[30px] leading-[30px] ml-[8px] mb-[8px] px-[10px] rounded-full'>
                   <span className='text-[14px]'>{value}</span>
@@ -68,7 +92,7 @@ export default function SearchModal(props: { showModal: any }) {
         <div>
           <p className='text-[18px] font-bold my-[16px]'>추천 검색어</p>
           <div className='flex flex-wrap'>
-            {searchList.map((value, index) => {
+            {searchListTest.map((value, index) => {
               return (
                 <p key={index} className='text-[14px] bg-gray-300 ml-[8px] mb-[8px] px-[15px] py-[5px] rounded-full'>{value}</p>
               )
@@ -83,7 +107,7 @@ export default function SearchModal(props: { showModal: any }) {
           </div>
           <div className='flex justify-between'>
             <div className='flex flex-col w-[48%]'>
-              {searchList.map((value, index) => {
+              {searchListTest.map((value, index) => {
                 return (
                   <div key={index} className='flex justify-between text-[14px] mb-[20px]'>
                     <p className='w-[20px] text-center font-bold mr-[10px]'>{index + 1}</p>
@@ -98,7 +122,7 @@ export default function SearchModal(props: { showModal: any }) {
               })}
             </div>
             <div className='flex flex-col w-[48%] mr-[5px]'>
-              {searchList.map((value, index) => {
+              {searchListTest.map((value, index) => {
                 return (
                   <div key={index} className='flex justify-between text-[14px] mb-[20px]'>
                     <p className='w-[20px] text-center font-bold mr-[10px]'>{index + 11}</p>
