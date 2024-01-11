@@ -26,11 +26,12 @@ export default function CategoryListComponent() {
             <ul className="flex flex-wrap w-full">
                 {categoryList.map((value, index) => {
                     return (
-                        <Link className="relative min-w-[160px] min-h-[280px] w-[20%] pr-[5%]" key={index} href={`/detail/${value}`}>
-                            <div className="relative h-[60%] rounded-lg">
-                                <Image className="bg-gray-200" src={"/images/images.jpg"} alt={""} layout={"fill"} />
+                        <Link className="min-w-[160px] min-h-[280px] w-[25%] pr-[5%]" key={index} href={`/detail/${value}`}>
+                            <div className="relative h-[60%]">
+                                <div className="absolute opacity-10 rounded-lg bg-gray-500 w-full h-full z-20 "></div>
+                                <Image src={"/images/images.jpg"} alt={""} layout={"fill"} />
                                 <div onClick={e => handleLikeClick(e)}>
-                                    <button className="absolute z-50 bottom-2 right-2" onClick={(e) => { setIsHeart(!isHeart) }}>
+                                    <button className="absolute z-10 bottom-2 right-2" onClick={(e) => { setIsHeart(!isHeart) }}>
                                         <FontAwesomeIcon className={`h-[16px] w-[16px] text-[16px] ${isHeart ? "text-blue-300" : "text-red-500"}`} icon={faHeart} />
                                     </button>
                                 </div>
@@ -53,7 +54,6 @@ export default function CategoryListComponent() {
 
                 })}
             </ul>
-            <Link href={"/detail/1"}>상세 페이지</Link>
         </div>
     );
 }

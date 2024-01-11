@@ -2,11 +2,30 @@
 // 이기웅 작성.
 
 import ItemDetailComponent from "@/components/detail/itemdetail/csr";
+import ItemGuideComponent from "@/components/detail/itemguide/csr";
+import ItemReviewComponent from "@/components/detail/itemreview/csr";
+import axios from "axios";
 
-export default function ItemDetailContainer() {
+
+export default async function ItemDetailContainer(props: any) {
+    
+    const item = props.item
+    
+
+    const itemList = await axios.get('http://localhost:4000/item/view', {
+        params: { item },
+    }).then((response) => {
+        return response.data
+    })
+        .catch((error) => {
+            console.error("API 호출 중 오류 발생:", error);
+        })
+        
     return (
-        <section className='pt-[10px] mb-[40px]'>
-            <ItemDetailComponent/>
+        <section>
+            <ItemDetailComponent itemList={itemList}/>
+            <ItemReviewComponent itemList={itemList}/>
+            <ItemGuideComponent itemList={itemList}/>
         </section>
     );
 };

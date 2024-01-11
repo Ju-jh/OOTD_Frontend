@@ -1,14 +1,26 @@
 // SSR (Server Side Rendering) Container
 // 이기웅 작성.
 
-import Image from "next/image";
 import ItemOrderComponent from "@/components/detail/itemorder/csr";
+import axios from "axios";
 
-export default function DetailOrderContainer() {
+export default async function DetailOrderContainer(props: any) {
+
+    const item = props.item
+    
+
+    const itemList = await axios.get('http://localhost:4000/item/view', {
+        params: { item },
+    }).then((response) => {
+        return response.data
+    })
+        .catch((error) => {
+            console.error("API 호출 중 오류 발생:", error);
+        })
+        
     return (
-        <section className='flex justify-between h-[700px] pt-[20px] mx-[5%]'>
-            <Image className="w-[50%] h-[90%]" src={"/images/images.jpg"} width={"1000"} height={"500"} alt={""}></Image>
-            <ItemOrderComponent />
+        <section className='h-[700px] pt-[20px] mx-[5%]'>
+            <ItemOrderComponent itemList={itemList} />
         </section>
     );
 };
