@@ -1,5 +1,7 @@
 'use client'
 
+import { GET_USER_BY_COOKIE } from '@/constants/endpoint';
+
 import axios from "axios";
 import React, {
   createContext,
@@ -15,6 +17,7 @@ interface AuthContextProps {
   isLogined: boolean;
   email: string;
   photo: string;
+  name: string;
   loginPlatform: string;
   setIsLogined: Dispatch<SetStateAction<boolean>>;
 }
@@ -28,21 +31,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [isLogined, setIsLogined] = useState<boolean>(false);
   const [email, setEmail] = useState('');
   const [photo, setPhoto] = useState('/photo.png');
+  const [name, setName] = useState('');
   const [loginPlatform, setLoginPlatform] = useState('')
+
   useEffect(() => {
     axios
-      .post('/api/cookie',{} , {
+      .post( GET_USER_BY_COOKIE ,{} , {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response.data.user.email)
         if (response.data && response.data.user.isLogined) {
-          setIsLogined(response.data.user.isLogined);
+          setIsLogined(true);
           setEmail(response.data.user.email)
           setPhoto(response.data.user.photo)
+          setName(response.data.user.name)
           setLoginPlatform(response.data.user.loginPlatform)
         } else {
           setIsLogined(false);
@@ -54,7 +59,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, [isLogined, photo]);
 
   return (
-    <AuthContext.Provider value={{ isLogined, setIsLogined, email, photo, loginPlatform }}>
+    <AuthContext.Provider value={{ isLogined, setIsLogined, email, photo, name, loginPlatform }}>
       {children}
     </AuthContext.Provider>
   );

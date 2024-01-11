@@ -1,25 +1,26 @@
 // CSR (Client Side Rendering) Container
 // 주재훈 작성.
-'use client'
+'use client';
 
 import { MyBasicInfoComponent } from '@/components/mypage/csr';
 import { MyPageInfoComponent } from '@/components/mypage/csr';
 import { useAuth } from '@/hooks/context/isLogined';
-import { useEffect } from 'react'
+import { useModal } from '@/hooks/context/modal';
+import { useEffect } from 'react';
 
 function MyPageContainer() {
-  
-  const { isLogined } = useAuth()
+  const { isLogined } = useAuth();
+  const { isModalOpen } = useModal();
 
-  useEffect (() => {
+  useEffect(() => {
     if (!isLogined) {
-      window.location.href = "http://localhost:3000";
+      window.location.href = 'http://localhost:3000';
     }
-  },[isLogined])
+  }, [isLogined]);
 
   return (
     <section className='w-[70%] min-h-[900px] flex flex-col'>
-      { isLogined && (
+      {isLogined && (
         <>
           <MyBasicInfoComponent />
           <MyPageInfoComponent />
@@ -29,5 +30,4 @@ function MyPageContainer() {
   );
 }
 
-export default MyPageContainer     
-
+export default MyPageContainer;

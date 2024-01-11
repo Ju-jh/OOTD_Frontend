@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { KAKAO_COLOR } from '@/constants/color'
-import { GOOGLE_LOGIN_LINK, KAKAO_LOGIN_LINK } from '@/constants/link'
+import { useEffect, useState } from 'react'
+import { GOOGLE_LOGIN_LINK, Home_Link, KAKAO_LOGIN_LINK } from '@/constants/link'
 import Link from 'next/link'
+import { useAuth } from '@/hooks/context/isLogined'
+import axios from 'axios'
+import { LOGIN } from '@/constants/endpoint'
 
 const LoginComponent = () => {
 
+  const { isLogined } = useAuth()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(true);
@@ -34,13 +37,35 @@ const LoginComponent = () => {
     setIsTyped(true)
   };
 
-  const handleLoginClick = () => {
-    if (isEmailValid) {
-      console.log('로그인!');
+  const handleLoginClick = async (email:string, password:string) => {
+    if (isEmailValid && isPasswordValid) {
+      try {
+        const response = await axios
+          .post(LOGIN, { email, password}, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+          });
+        if(response.data.success){
+          window.location.href = Home_Link
+          alert(response.data.message)
+        } else {
+          alert(response.data.message)
+        }
+      } catch (error) {
+        console.error('해당 계정 로그인에 실패했습니다.', error);
+      }
     } else {
-      console.log('유효한 이메일을 입력하세요.');
+      console.log('유효한 이메일 혹은 비밀번호를 입력하세요.');
     }
   };
+
+  useEffect (() => {
+    if (isLogined) {
+      window.location.href = "http://localhost:3000";
+    }
+  },[isLogined])
 
   return (
     <div className='flex-1 p-[50px]'>
@@ -71,7 +96,7 @@ const LoginComponent = () => {
         <div className='flex items-center gap-[20px]'>
           <button
             className={`w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm ${(isEmailValid && isPasswordValid && isTyped) ? 'hover:bg-blue-100' : ''}`}
-            onClick={handleLoginClick}
+            onClick={()=>handleLoginClick(email, password)}
             disabled={(!isEmailValid || !isPasswordValid || !isTyped)}
           >
             <span className='font-semibold text-black'>로그인</span>
