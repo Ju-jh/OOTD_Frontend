@@ -5,6 +5,7 @@ import Header from '@/components/basic/header/csr'
 import Footer from '@/components/basic/footer/ssr'
 import { DarkModeProvider } from '@/hooks/context/darkMode'
 import { AuthProvider } from '@/hooks/context/isLogined'
+import { ModalProvider } from '@/hooks/context/modal'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,9 +24,11 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         <AuthProvider>
           <DarkModeProvider>
-            <Header />
-            {children}
-            <Footer />
+            <ModalProvider>
+              <Header />
+              {children}
+              <Footer />
+            </ModalProvider>
           </DarkModeProvider>
         </AuthProvider>
       </body>

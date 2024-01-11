@@ -8,6 +8,7 @@ const config: Config = {
     './src/containers/**/*.{js,ts,jsx,tsx,mdx}',
     './src/hooks/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/modals/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {

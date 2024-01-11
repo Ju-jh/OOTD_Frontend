@@ -1,5 +1,8 @@
 'use client'
 
+import { SEND_EMAIL_VERIFY_CODE, SIGNUP, VERIFY_EMAIL_CODE } from '@/constants/endpoint';
+import { Home_Link } from '@/constants/link';
+import axios from 'axios';
 import { useState } from 'react'
 
 const SignUpComponent = () => {
@@ -10,11 +13,13 @@ const SignUpComponent = () => {
   const [password, setPassword] = useState('');
   const [passwords, setPasswords] = useState('')
   const [isEmailValid, setIsEmailValid] = useState(true);
+  const [EmailValidAlarm, setEmailValidAlarm] = useState('')
   const [isEmailVerifyNumberValid, setIsEmailVerifyNumberValid] = useState(true);
   const [isNameValid, setIsNameValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [isPasswordsValid, setIsPasswordsValid] = useState(true);
   const [isTyped, setIsTyped] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   const handleEmailChange = (e : any) => {
     const newEmail = e.target.value;
@@ -22,7 +27,7 @@ const SignUpComponent = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setIsEmailValid(emailRegex.test(newEmail));
-
+    setEmailValidAlarm('')
     setIsTyped(true)
   };
   
@@ -71,11 +76,66 @@ const SignUpComponent = () => {
     setIsTyped(true)
   };
 
-  const handleLoginClick = () => {
-    if (isEmailValid) {
-      console.log('로그인!');
+  const clickSendEmailVerfiyCode = async (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(email)) {
+      try {
+        
+        const response = await axios
+          .post(SEND_EMAIL_VERIFY_CODE , { email }, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        setEmailValidAlarm(response.data.message)
+      } catch (error) {
+        console.error('이메일 인증 코드 전송에 실패했습니다.', error);
+      }
     } else {
-      console.log('유효한 이메일을 입력하세요.');
+      console.log('유효한 이메일을 입력하세요');
+    }
+  };
+
+  const clickCodeVerify = async (code: any) => {
+    const emailVerifyRegex = /^\d{6}$/;
+    if (emailVerifyRegex.test(code)) {
+      try {
+        const response = await axios
+          .post(VERIFY_EMAIL_CODE , { email, code }, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        console.log(response.data);
+        setIsEmailVerified(true);
+      } catch (error) {
+        console.error('이메일 인증에 실패했습니다.', error);
+      }
+    } else {
+      console.log('유효한 인증번호를 입력하세요');
+    }
+  };
+
+  const handleSignupClick = async (email:string, password:string, name:string) => {
+    if (isEmailValid && isEmailVerifyNumberValid && isNameValid && isPasswordValid && isPasswordsValid && isTyped) {
+      try {
+        const response = await axios
+          .post(SIGNUP, { email, password, name }, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          });
+        if(response.data.success){
+          window.location.href = Home_Link
+          alert(response.data.message)
+        } else {
+          alert(response.data.message)
+        }
+      } catch (error) {
+        console.error('해당 계정 회원가입에 실패했습니다.', error);
+      }
+    } else {
+      alert('잘못된 접근입니다.')
     }
   };
 
@@ -92,12 +152,18 @@ const SignUpComponent = () => {
               placeholder='example@ootd.com'
               value={email}
               onChange={handleEmailChange}
+              disabled={isEmailVerified}
             />
-            <button className='w-[30%] h-[40px] bg-blue-200 hover:bg-blue-300'>
+            <button
+              className={`w-[30%] h-[40px] ${isEmailVerified ? 'bg-gray-300' : 'bg-blue-200 hover:bg-blue-300'}  `}
+              onClick={() => clickSendEmailVerfiyCode(email)}
+              disabled={isEmailVerified}
+            >
               <span className='text-[14px] font-semibold text-black'>인증번호 발송</span> 
             </button>
           </div>
           {!isEmailValid && <p className='text-red-500 w-[100%] text-start text-[13px] mt-[10px]'>이메일이 형식이 올바르지 않습니다.</p>}
+          {isEmailValid && !isEmailVerified && <p className='text-red-500 w-[100%] text-start text-[13px] mt-[10px]'>{EmailValidAlarm}</p>}
         </div>
         <div className='flex flex-col items-center'>
           <p className='w-[100%] text-start text-[13px] mb-[5px]'>이메일 인증 확인코드</p>
@@ -108,12 +174,18 @@ const SignUpComponent = () => {
               placeholder='XXXXXX'
               value={emailVerfiyNumber}
               onChange={handleEmailVerfiyNumberChange}
+              disabled={isEmailVerified}
             />
-            <button className='w-[30%] h-[40px] bg-blue-200 hover:bg-blue-300'>
+            <button
+              className={`w-[30%] h-[40px] ${isEmailVerified ? 'bg-gray-300' : 'bg-blue-200 hover:bg-blue-300'}  `}
+              onClick={() => clickCodeVerify(emailVerfiyNumber)}
+              disabled={isEmailVerified}
+            >
               <span className='text-[14px] font-semibold text-black'>인증번호 인증</span> 
             </button>
           </div>
           {!isEmailVerifyNumberValid && <p className='text-red-500 w-[100%] text-start text-[13px] mt-[10px]'>인증코드는 6자리 숫자입니다.</p>}
+          {isEmailVerified && <p className='text-blue-500 w-[100%] text-start text-[13px] mt-[10px]'>이메일이 인증되었습니다.</p>}
         </div>
         <div className='flex flex-col items-center'>
           <p className='w-[100%] text-start text-[13px] mb-[5px]'>이름</p>
@@ -151,9 +223,9 @@ const SignUpComponent = () => {
         </div>
         <div className='flex items-center gap-[20px]'>
           <button
-            className={`w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm ${(isEmailValid && isEmailVerifyNumberValid && isNameValid && isPasswordValid && isPasswordsValid && isTyped) ? 'hover:bg-blue-100' : ''}`}
-            onClick={handleLoginClick}
-            disabled={(!isEmailValid || !isEmailVerifyNumberValid || !isNameValid || !isPasswordValid || !isPasswordsValid || !isTyped)}
+            className={`w-full h-[50px] flex items-center justify-center rounded-md bg-white shadow-sm ${(isEmailValid && isEmailVerifyNumberValid && isNameValid && isPasswordValid && isPasswordsValid && isTyped && isEmailVerified) ? 'hover:bg-blue-100' : ''}`}
+            onClick={() => handleSignupClick(email, password, name)}
+            disabled={(!isEmailValid || !isEmailVerifyNumberValid || !isNameValid || !isPasswordValid || !isPasswordsValid || !isTyped || !isEmailVerified)}
           >
             <span className='font-semibold text-black'>회원가입</span>
           </button>

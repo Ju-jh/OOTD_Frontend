@@ -1,0 +1,6 @@
+export const GET_USER_BY_COOKIE = '/api/cookie'
+export const SEND_EMAIL_VERIFY_CODE ='/api/auth/send-verification-email'
+export const VERIFY_EMAIL_CODE ='/api/auth/verify-email'
+export const SIGNUP ='/api/signup'
+export const LOGIN = '/api/login'
+export const LOGOUT = '/api/logout'
