@@ -3,7 +3,7 @@
 
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,6 +12,7 @@ import { MENUBOX_COLOR } from '@/constants/color'
 import { useDarkMode } from '@/hooks/context/darkMode'
 import { useAuth } from '@/hooks/context/isLogined'
 import SearchModal from '@/components/searchmodal/modal'
+import axios from 'axios'
 
 
 export default function Header() {
@@ -23,7 +24,7 @@ export default function Header() {
   const showModal = () => {
     setIsModal(!isModal)
   }
-
+  
   return (
     <header
       className={`fixed flex items-center justify-between w-full h-[80px] px-[15%] shadow-md ${darkMode ? 'bg-[#121212]' : 'bg-white'}`}

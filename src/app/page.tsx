@@ -43,7 +43,7 @@ async function fetchProductRankingServerRenderedData() {
     },
     {
       type: 'point', 
-      desc: '포인트가 많이 쌓였다면?'
+      desc: '포인트를 이렇게나 많이??!!'
     }
   ]
   return ProductRankingData;

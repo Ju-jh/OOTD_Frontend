@@ -25,6 +25,11 @@ const nextConfig = {
         hostname: 'image.msscdn.net',
         port: '',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '4000',
+      },
     ],
   },
 };

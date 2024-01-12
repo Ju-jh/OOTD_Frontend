@@ -40,12 +40,19 @@ export const MyBasicInfoComponent = () => {
     <div className='mx-auto w-[450px] min-h-[250px] mt-[100px] mb-[40px] px-[40px]'>
       <div className='flex items-center justify-between px-[20px] relative'>
         <button 
-          className=' rounded-full overflow-hidden bg-[#f3f6f6]'
+          className='relative rounded-full overflow-hidden bg-[#f3f6f6]'
           onClick={()=>{openModal('photoChange')}}
         >
           <Image src={photo} alt='myProfileImage' width={60} height={60} />
-          <span className={`absolute ${darkMode ? 'text-white' : 'text-black'}  text-[12px] font-bold -translate-x-[19px]`}>사진변경</span>
         </button>
+          <span
+            style={{
+              WebkitTextStroke: '0.1px white', 
+              pointerEvents: 'none',
+            }}
+            className={`absolute text-black  text-[14px] font-bold  translate-x-[3px] translate-y-[1px]`}>
+            사진변경
+          </span>
         <div className='text-[14px] translate-y-[5px]'>
           <p>안녕하세요, <span>{name}</span> 님.</p>
           <p>고객님과 OOTD는 <span className='font-bold'>반가운 사이</span>입니다.</p>
