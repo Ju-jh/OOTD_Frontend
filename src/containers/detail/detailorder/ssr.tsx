@@ -8,7 +8,6 @@ export default async function DetailOrderContainer(props: any) {
 
     const item = props.item
     
-
     const itemList = await axios.get('http://localhost:4000/item/view', {
         params: { item },
     }).then((response) => {

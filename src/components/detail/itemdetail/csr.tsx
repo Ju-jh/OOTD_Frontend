@@ -25,15 +25,15 @@ export default function ItemDetailComponent(itemList: any) {
                     <p className="text-[20px] font-bold mb-[20px]">상품 정보</p>
                     <div className="flex text-[14px] mb-[12px]">
                         <p className="w-[80px]">상품코드</p>
-                        <span>1</span>
+                        <span>{item.i_id}</span>
                     </div>
                     <div className="flex text-[14px] mb-[12px]">
                         <p className="w-[80px]">상품명</p>
-                        <span>23FW 톰브라운 클래식 사선완장 4Bar 맨투맨 스웨트 셔츠 FJT002A</span>
+                        <span>{item.title}</span>
                     </div>
                     <div className="flex text-[14px] mb-[12px]">
                         <p className="w-[80px]">상세정보</p>
-                        <span>상품고시정보</span>
+                        <span>{item.description}</span>
                     </div>
                 </div>
                 <div className="w-full h-[80px] bg-yellow-300 mt-[20px] mb-[30px]">

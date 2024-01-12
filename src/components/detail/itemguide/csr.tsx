@@ -7,9 +7,7 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
-export default function ItemGuideComponent(itemList: any) {
-
-     const item = itemList.itemList
+export default function ItemGuideComponent() {
      
      const [isGuide1, setIsGuide1] = useState(false)
      const [isGuide2, setIsGuide2] = useState(false)

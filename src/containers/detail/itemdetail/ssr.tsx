@@ -10,7 +10,6 @@ import axios from "axios";
 export default async function ItemDetailContainer(props: any) {
     
     const item = props.item
-    
 
     const itemList = await axios.get('http://localhost:4000/item/view', {
         params: { item },
@@ -25,7 +24,7 @@ export default async function ItemDetailContainer(props: any) {
         <section>
             <ItemDetailComponent itemList={itemList}/>
             <ItemReviewComponent itemList={itemList}/>
-            <ItemGuideComponent itemList={itemList}/>
+            <ItemGuideComponent/>
         </section>
     );
 };
