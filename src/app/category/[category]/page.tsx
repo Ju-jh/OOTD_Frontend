@@ -4,6 +4,7 @@
 
 import CategroyMenuContainer from "@/containers/category/categoryMenu/ssr";
 import CategoryNameContainer from "@/containers/category/categoryTopName/ssr";
+import axios from "axios";
 
 async function fetchCategoryServerRenderedData() {
     // const response = await fetch('api-endpoint');
@@ -13,6 +14,14 @@ async function fetchCategoryServerRenderedData() {
     const categoryData = ['outer', 'top', 'pants', 'shoes', 'hat', 'bag', 'accessary', 'headwear', 'onepiece', 'skirt', 'socks', 'sports', 'underwear'];
     return categoryData;
 }
+
+async function categoryData(categoryName:string) {
+    const res = await axios.get('http://localhost:4000/item/categoryview', {
+        params: { categoryName },
+    })
+    return res.data
+}
+
 
 export async function generateStaticParams() {
     const category = await fetchCategoryServerRenderedData();
@@ -28,8 +37,8 @@ export default async function CategroyPage( parmas:{ params: { category: string 
 
     return (
         <main className="Main flex flex-col w-full min-h-[1300px] pt-[80px] px-[15%]">
-            <CategoryNameContainer categoryParm={category} />
-            <CategroyMenuContainer />
+            <CategoryNameContainer category={category} />
+            <CategroyMenuContainer category={category} />
         </main>
     )
 

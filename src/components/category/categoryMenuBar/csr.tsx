@@ -9,7 +9,6 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function CategoryMenuBarComponent() {
-
     const [isCategory, setIsCategory] = useState(false)
     const [isBrand, setIsBrand] = useState(false)
     const [isPrice, setIsPrice] = useState(false)

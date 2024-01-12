@@ -27,32 +27,13 @@ interface Item {
 export default function ItemOrderComponent(itemList: any) {
 
     const item = itemList.itemList
-    
+
     const [isSize, setIsSize] = useState(false)
-    const [isItem, setIsItem] = useState<Item>()
-    const [isDiscount, setIsDiscount] = useState(0)
+    const discount = Math.round(parseInt(item.discount) / parseInt(item.price) * 100)
 
     const checkBtn = () => {
         setIsSize(!isSize)
     }
-
-    // const discountRate = (item: Item) => {
-    //     const discount = Math.round(parseInt(item.discount) / parseInt(item.price) * 100)
-    //     setIsDiscount(discount)
-    // }
-
-    // useEffect(() => {
-    //     axios.get('http://localhost:4000/item/view', {
-    //         params: { itemId },
-    //     }).then((response) => {
-    //         console.log("item", response.data);
-    //         setIsItem(response.data)
-    //         discountRate(response.data)
-    //     })
-    //         .catch((error) => {
-    //             console.error("API 호출 중 오류 발생:", error);
-    //         })
-    // }, [])
 
     return (
         <div className="flex justify-between">
@@ -75,7 +56,7 @@ export default function ItemOrderComponent(itemList: any) {
                         </div>
                     </div>
                     <p className="text-[16px] my-[4px]">
-                        {isItem?.title}
+                        {item.title}
                     </p>
                     <div className="flex h-[16px]">
                         <div className="relative h-[16px] w-[70px] leading-[16px]">
@@ -86,12 +67,12 @@ export default function ItemOrderComponent(itemList: any) {
                     </div>
 
                     <div className="flex flex-col mt-[10px] mb-[24px]">
-                        <div className="text-[14px]">
-                            <span style={{ color: EVENT_COLOR }}>{`${item.discount}%`}</span>
-                            <span className="line-through text-gray-300 mx-[5px]">{item.price}</span>
-                        </div>
+                        {parseInt(item.discount) == 0 ? null : <div className="text-[14px]">
+                            <span style={{ color: EVENT_COLOR }}>{`${discount}%`}</span>
+                            <span className="line-through text-gray-300 mx-[5px]">{parseInt(item.price).toLocaleString()}</span>
+                        </div>}
                         <div>
-                            <span className="text-[20px] font-bold">{item.price}</span>
+                            <span className="text-[20px] font-bold">{(parseInt(item.price) - parseInt(item.discount)).toLocaleString() + "원"}</span>
                         </div>
                     </div>
                 </div>
