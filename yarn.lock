@@ -2204,6 +2204,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iamport-typings@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "iamport-typings@npm:1.3.1"
+  checksum: a7a2030b443040ed901b02b73c2b34878fd78be91eca54aa9f62eefd8fd0a19fc282d11c99c3bafa8e04bfa28aed75475a3b1f8791377ec8342279530574a72d
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:^0.6.2":
   version: 0.6.3
   resolution: "iconv-lite@npm:0.6.3"
@@ -4300,6 +4307,7 @@ __metadata:
     babel-plugin-macros: "npm:^3.1.0"
     eslint: "npm:^8"
     eslint-config-next: "npm:14.0.4"
+    iamport-typings: "npm:^1.3.1"
     next: "npm:14.0.4"
     postcss: "npm:^8"
     react: "npm:^18.2.0"

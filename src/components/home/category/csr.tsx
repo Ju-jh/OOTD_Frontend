@@ -20,7 +20,7 @@ function CategoryComponent({ serverRenderedData }: Data) {
           className='Catrgory w-[80px] h-[80px] rounded-md shadow-md overflow-hidden'
           style={{backgroundColor:MENUBOX_COLOR}}
         >
-          <Link href={`/category/${item}`}>
+          <Link href={`/category/${item}/1`}>
             <div className='flex items-center justify-center w-full h-full hover:bg-slate-300 transition-all'>
             </div>
           </Link>

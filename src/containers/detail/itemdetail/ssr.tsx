@@ -1,7 +1,6 @@
 // SSR (Server Side Rendering) Container
 // 이기웅 작성.
 
-import ItemDetailComponent from "@/components/detail/itemdetail/csr";
 import ItemGuideComponent from "@/components/detail/itemguide/csr";
 import ItemReviewComponent from "@/components/detail/itemreview/csr";
 import axios from "axios";
@@ -22,9 +21,7 @@ export default async function ItemDetailContainer(props: any) {
         
     return (
         <section>
-            <ItemDetailComponent itemList={itemList}/>
             <ItemReviewComponent itemList={itemList}/>
-            <ItemGuideComponent/>
         </section>
     );
 };

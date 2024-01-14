@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import '../styles/globals.css'
 import Header from '@/components/basic/header/csr'
 import Footer from '@/components/basic/footer/ssr'
 import { DarkModeProvider } from '@/hooks/context/darkMode'
 import { AuthProvider } from '@/hooks/context/isLogined'
 import { ModalProvider } from '@/hooks/context/modal'
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -31,6 +33,7 @@ export default function RootLayout({
             </ModalProvider>
           </DarkModeProvider>
         </AuthProvider>
+        <Script src="https://cdn.iamport.kr/v1/iamport.js" />
       </body>
     </html>
   )

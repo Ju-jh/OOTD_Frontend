@@ -7,7 +7,7 @@ import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
-export default function CategoryNameComponent(category: any) {
+export default function CategoryNameComponent(category: any, page:any) {
 
   
   const [isButton, setIsButton] = useState(true)
