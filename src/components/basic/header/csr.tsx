@@ -3,16 +3,15 @@
 
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars, faCartShopping, faHeart, faMagnifyingGlass, faMoon, faSun, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faCartShopping, faHeart, faMagnifyingGlass, faMoon, faSun, faUser } from '@fortawesome/free-solid-svg-icons'
 import { MENUBOX_COLOR } from '@/constants/color'
 import { useDarkMode } from '@/hooks/context/darkMode'
 import { useAuth } from '@/hooks/context/isLogined'
 import SearchModal from '@/components/searchmodal/modal'
-import axios from 'axios'
 
 
 export default function Header() {
@@ -31,12 +30,12 @@ export default function Header() {
       style={{ zIndex: 100 }}
     >
       <div className='h-full flex items-center'>
-        <Link href={'/'}>
+        <Link href={'/'} style={{ width: '100px', height: '30px'}} className='flex items-center' >
           {
             darkMode ?
-              <Image src={'/images/components/header/darkThemeLogo.png'} alt='logoImage' width={90} height={60} />
+              <Image src={'/images/components/header/darkThemeLogo.png'} alt='darkLogoImage' width={100} height={30} style={{ objectFit: 'cover', width: '100%', height: '100%' }} priority/>
               :
-              <Image src={'/images/components/header/lightThemeLogo.png'} alt='logoImage' width={90} height={60} />
+              <Image src={'/images/components/header/lightThemeLogo.png'} alt='lightLogoImage' width={100} height={30} style={{ objectFit: 'cover', width: '100%', height: '100%' }} priority/>
           }
         </Link>
         <div
@@ -64,22 +63,22 @@ export default function Header() {
           </button>
         </div>
       </div>
-      <div className='flex w-[200px] h-full items-center justify-between'>
-        <button onClick={showModal}>
-          <FontAwesomeIcon icon={faMagnifyingGlass} className='w-[21px] h-[21px] text-[21px] hover:text-blue-500' />
+      <div className='flex w-[200px] h-[100%]  items-center justify-between'>
+        <button style={{ width: '21px', height: '21px'}}  onClick={showModal}>
+          <FontAwesomeIcon icon={faMagnifyingGlass} style={{ width: '21px', height: '21px'}} className='hover:text-blue-500' />
         </button>
         {isModal && <SearchModal showModal={showModal} />}
-        <Link href={'/likes'}><FontAwesomeIcon icon={faHeart} className='w-[21px] h-[21px] text-[21px] hover:text-red-500' /></Link>
-        <Link href={'/mycart'}><FontAwesomeIcon icon={faCartShopping} className='w-[21px] h-[21px] text-[21px] hover:text-blue-500' /></Link>
+        <Link href={'/likes'} style={{ width: '21px', height: '21px'}} ><FontAwesomeIcon icon={faHeart} style={{ width: '21px', height: '21px'}} className='hover:text-red-500' /></Link>
+        <Link href={'/mycart'} style={{ width: '21px', height: '21px'}} ><FontAwesomeIcon icon={faCartShopping} style={{ width: '21px', height: '21px'}} className='hover:text-blue-500' /></Link>
         {isLogined ? (
-          <Link href="/mypage">
-            <div className='w-[25px] h-[25px] rounded-full overflow-hidden bg-[#cfd5db] -translate-y-[2px]'>
-              <Image src={photo} alt="profileImage" width={25} height={25} />
+          <Link href="/mypage" style={{ width: '23px', height: '23px'}}>
+            <div style={{ width: '23px', height: '23px'}} className='rounded-full overflow-hidden bg-[#cfd5db]'>
+              <Image src={photo} alt="profileImage" width={23} height={23} style={{ objectFit: 'cover', width: '100%', height: '100%' }}/>
             </div>
           </Link>
         ) : null}
         {
-          !isLogined && <Link href={'/login'}><FontAwesomeIcon icon={faUser} className='w-[21px] h-[21px] text-[21px] hover:text-blue-500' /></Link>
+          !isLogined && <Link href={'/login'} style={{ width: '23px', height: '23px'}} ><FontAwesomeIcon icon={faUser} style={{ width: '21px', height: '21px'}} className='hover:text-blue-500' /></Link>
         }
       </div>
     </header>

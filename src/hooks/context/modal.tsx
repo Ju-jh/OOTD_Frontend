@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { PhotoChangeModalComponent } from '@/modals/bigModals/csr';
+import { PhoneNumberChangeModalComponent, PhotoChangeModalComponent } from '@/modals/bigModals/csr';
+import { CheckingModalComponent } from '@/modals/alertModals/csr';
 
 interface ModalContext {
   isModalOpen: boolean;
@@ -43,6 +44,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
       document.body.style.right = '0';
       document.body.style.bottom = '0';
       document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
     } else {
       document.body.style.position = '';
       document.body.style.left = '';
@@ -50,6 +52,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
       document.body.style.right = '';
       document.body.style.bottom = '';
       document.body.style.width = '';
+      document.body.style.overflow = '';
     }
 
     return () => {
@@ -59,6 +62,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
       document.body.style.right = '';
       document.body.style.bottom = '';
       document.body.style.width = '';
+      document.body.style.overflow = '';
     };
   }, [isModalOpen]);
 
@@ -72,6 +76,8 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
   return (
     <ModalContext.Provider value={contextValue}>
       {modalContent === 'photoChange' && <PhotoChangeModalComponent />}
+      {modalContent === 'phoneNumberChange' && <PhoneNumberChangeModalComponent />}
+      {modalContent === 'checkingModalComponent' && <CheckingModalComponent/>} 
       {children}
     </ModalContext.Provider>
   );

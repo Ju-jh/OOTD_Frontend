@@ -5,18 +5,10 @@
 import { MyBasicInfoComponent } from '@/components/mypage/csr';
 import { MyPageInfoComponent } from '@/components/mypage/csr';
 import { useAuth } from '@/hooks/context/isLogined';
-import { useModal } from '@/hooks/context/modal';
-import { useEffect } from 'react';
 
 function MyPageContainer() {
   const { isLogined } = useAuth();
-  const { isModalOpen } = useModal();
-
-  useEffect(() => {
-    if (!isLogined) {
-      window.location.href = 'http://localhost:3000';
-    }
-  }, [isLogined]);
+  
 
   return (
     <section className='w-[70%] min-h-[900px] flex flex-col'>
