@@ -1,6 +1,6 @@
 'use client'
 
-import { LOGOUT } from '@/constants/endpoint'
+import { GET_POINT, GET_PHONE_NUMBER, LOGOUT } from '@/constants/endpoint'
 import { GOOGLE_LOGIN_LINK, Home_Link, KAKAO_LOGIN_LINK } from '@/constants/link'
 import { useDarkMode } from '@/hooks/context/darkMode'
 import { useAuth } from '@/hooks/context/isLogined'
@@ -8,7 +8,8 @@ import { useModal } from '@/hooks/context/modal'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import async from './../../containers/detail/detailorder/ssr';
 
 
 export const MyBasicInfoComponent = () => {
@@ -16,6 +17,7 @@ export const MyBasicInfoComponent = () => {
   const { darkMode } = useDarkMode()
   const { photo, name, setIsLogined } = useAuth()
   const { openModal } = useModal()
+  const [ point, setPoint] =useState('3,000')
 
   const clickLogoutBtn = () => {
       axios
@@ -25,7 +27,7 @@ export const MyBasicInfoComponent = () => {
         },
         withCredentials: true,
       })
-        .then((response) => {
+      .then((response) => {
           if (response) {
             setIsLogined(false)
             window.location.href = Home_Link;
@@ -35,15 +37,42 @@ export const MyBasicInfoComponent = () => {
       });
   }
 
+  const getPoint = async () => {
+    const response = await axios.get(GET_POINT , {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    });
+
+    if (response) {
+      setPoint(response.data)
+    }
+
+  };
+
+  useEffect(() => {
+    getPoint();
+
+    const pollInterval = 10 * 1000; 
+    const intervalId = setInterval(() => {
+      getPoint();
+    }, pollInterval);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+
+  }, []);
 
   return (    
     <div className='mx-auto w-[450px] min-h-[250px] mt-[100px] mb-[40px] px-[40px]'>
       <div className='flex items-center justify-between px-[20px] relative'>
         <button 
-          className='relative rounded-full overflow-hidden bg-[#f3f6f6]'
+          className='relative w-[60px] h-[60px] rounded-full overflow-hidden bg-[#f3f6f6]'
           onClick={()=>{openModal('photoChange')}}
         >
-          <Image src={photo} alt='myProfileImage' width={60} height={60} />
+          <Image src={photo} alt='myProfileImage' width={60} height={60} style={{ objectFit: 'cover', width: '100%', height: '100%' }}/>
         </button>
           <span
             style={{
@@ -62,7 +91,7 @@ export const MyBasicInfoComponent = () => {
       <div className={`w-[100%] h-[100px] mt-[40px] ${darkMode ? 'bg-[#121212]' : 'bg-[#F7F8F9]'}  flex items-center justify-center gap-[50px] rounded-md`}>
         <button className=''>
           <p className='font-bold'>O money</p>
-          <p className='text-[14px]'>4,011<span>원</span></p>
+          <p className='text-[14px]'>{ point }<span>원</span></p>
         </button>
         <button className=''>
           <p className='font-bold'>쿠폰</p>
@@ -194,9 +223,11 @@ export const MyPageEditInfoComponent = () => {
 
   const { email, name } = useAuth()
   const { darkMode } = useDarkMode()
+  const { isModalOpen, openModal } = useModal()
   const [ otherName, setOtherName ] = useState('')
   const [ isNameValid, setIsNameValid ] = useState(false);
   const [ isTyped, setIsTyped ] = useState(false);
+  const [ phoneNumber, setPhoneNumber] = useState('휴대폰 인증이 되지 않았습니다.')
 
   const handleNameChange = (e : any) => {
     const newName = e.target.value;
@@ -210,6 +241,25 @@ export const MyPageEditInfoComponent = () => {
 
     setIsTyped(true)
   };
+
+  const getPhoneNumber = async () => {
+    const response = await axios.get(GET_PHONE_NUMBER ,{
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    })
+    if (response) {
+      if (response.data != '') {
+        setPhoneNumber(response.data)
+      }
+    }
+  }
+
+  useEffect(() => {
+    console.log('초기화')
+    getPhoneNumber()
+  },[isModalOpen])
 
   return (
     <div className='w-[100%] h-[500px] flex my-[30px]'>
@@ -238,12 +288,15 @@ export const MyPageEditInfoComponent = () => {
           </div>
           <div>
             <p className='w-[100%] text-start text-[13px] mb-[5px]'>전화번호</p>
-            <input
-              type="email"
-              className={`w-[80%] h-[40px] ${darkMode ? 'text-white' : 'text-black '} p-[10px] border focus:border-purple-400 outline-none`}
-              placeholder={email}
-              value={email}
-            />
+            <button className='w-[80%] h-[40px]' onClick={()=>{openModal('phoneNumberChange')}}>
+              <input
+                type="text"
+                className={`w-[100%] h-[100%] ${darkMode ? 'text-white' : 'text-black '} p-[10px] border bg-[#707070] focus:border-purple-400 outline-none`}
+                placeholder={phoneNumber}
+                value={phoneNumber}
+                readOnly
+              />
+            </button>
           </div>
           <button 
               className='w-[80%] h-[40px] flex items-center justify-center  rounded-md shadow-md bg-white hover:bg-slate-200 mt-[20px]'
@@ -281,6 +334,7 @@ export const MyPageEditInfoComponent = () => {
           </Link>
           <button 
               className='w-full h-[60px] flex items-center justify-center  rounded-md shadow-md bg-white hover:bg-slate-200'
+              onClick={()=>{openModal('checkingModalComponent')}}
             >
               <div className='inline-block mr-[10px]'>
               </div>

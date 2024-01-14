@@ -10,7 +10,7 @@ interface DarkModeContext {
 const DarkModeContext = createContext<DarkModeContext | undefined>(undefined);
 
 export function DarkModeProvider({ children }: { children: React.ReactNode }) {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   const toggleDarkMode = () => {
     setDarkMode((prevDarkMode) => {
