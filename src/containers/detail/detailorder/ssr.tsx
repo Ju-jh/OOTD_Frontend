@@ -4,21 +4,20 @@
 import ItemOrderComponent from "@/components/detail/itemorder/csr";
 import axios from "axios";
 
-export default async function DetailOrderContainer(props: any) {
-
-    const item = props.item
-    
-    const itemList = await axios.get('http://localhost:4000/item/view', {
+async function itemData(item: string) {
+    const res = await axios.get('http://localhost:4000/item/view', {
         params: { item },
-    }).then((response) => {
-        return response.data
     })
-        .catch((error) => {
-            console.error("API 호출 중 오류 발생:", error);
-        })
-        
+    return res.data
+}
+export default async function DetailOrderContainer(props: any) {
+    const item = props.item
+    const itemList = await itemData(item)
+    console.log(itemList);
+    
+
     return (
-        <section className='h-[700px] pt-[20px] mx-[5%]'>
+        <section className='h-[700px] pt-[20px] mx-[15%]'>
             <ItemOrderComponent itemList={itemList} />
         </section>
     );

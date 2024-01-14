@@ -23,7 +23,7 @@ async function fetchCategoryServerRenderedData() {
   // { cache: 'no-store' } <-- 캐시 강제 (isr)
   // const data = await response.json();
   // return data.serverRenderedData;
-  const categoryData = ['outer', 'top', 'pants', 'shoes', 'hat', 'bag', 'accessary', 'headwear', 'onepiece', 'skirt', 'socks', 'sports', 'underwear']; 
+  const categoryData = ['watch', 'top', 'skirt', 'shoes', 'pants', 'outer', 'onepiece', 'headwear', 'bag', 'accessory']; 
   return categoryData;
 }
 

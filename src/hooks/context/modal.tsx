@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { PhoneNumberChangeModalComponent, PhotoChangeModalComponent } from '@/modals/bigModals/csr';
+import { CardInstallmentComponent, DeliveryInformationComponent, PhoneNumberChangeModalComponent, PhotoChangeModalComponent, ProductInformationComponent, RefundInformationComponent } from '@/modals/bigModals/csr';
 import { CheckingModalComponent } from '@/modals/alertModals/csr';
 
 interface ModalContext {
@@ -78,6 +78,10 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
       {modalContent === 'photoChange' && <PhotoChangeModalComponent />}
       {modalContent === 'phoneNumberChange' && <PhoneNumberChangeModalComponent />}
       {modalContent === 'checkingModalComponent' && <CheckingModalComponent/>} 
+      {modalContent === 'ProductInformation' && <ProductInformationComponent />}
+      {modalContent === 'DeliveryInformationComponent' && <DeliveryInformationComponent />}
+      {modalContent === 'RefundInformationComponent' && <RefundInformationComponent />}
+      {modalContent === 'CardInstallmentComponent' && <CardInstallmentComponent />}
       {children}
     </ModalContext.Provider>
   );

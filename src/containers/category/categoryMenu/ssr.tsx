@@ -2,29 +2,32 @@ import CategoryListComponent from "@/components/category/categoryList/csr";
 import CategoryMenuBarComponent from "@/components/category/categoryMenuBar/csr";
 import axios from "axios";
 
-async function categoryData(categoryName:string) {
-    const res = await axios.get('http://localhost:4000/item/categoryview', {
-        params: { categoryName },
-    })
-    return res.data
+type Data = {
+    category: string;
+    page:string
+    totalpage:number
 }
 
-export default async function CategoryMenuContainer(category: any) {
+async function categoryPage(category: string, page: any) {
+    page = parseInt(page) -1
+    const res = await axios.get('http://localhost:4000/item/categorypage', {
+        params: { category, page},
+    })
+    return {
+        props: {
+          list: res.data,
+        },
+        revalidate: 20,
+      };
+}
 
-    const categoryName = category.category
-    const categoryList = categoryData(categoryName)
-
+export default async function CategoryMenuContainer({category, page, totalpage}:Data) {
+    const categoryData = await categoryPage(category,page)
 
     return (
         <section className='flex justify-between w-full pt-[40px]'>
             <CategoryMenuBarComponent />
-            <CategoryListComponent categoryList={categoryList} />
+            <CategoryListComponent categoryname={category} category={categoryData.props.list} page={page} totalpage={totalpage}/>
         </section>
     );
-}
-
-
-export async function generateStaticParams() {
-    const category = ['outer', 'top', 'pants', 'shoes', 'bag', 'accessary', 'headwear', 'onepiece', 'skirt', 'socks']
-    return category.map((categoryList) => ({ category: categoryList.toString() }));
 }
