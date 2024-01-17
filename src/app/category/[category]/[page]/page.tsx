@@ -42,7 +42,7 @@ export async function generateStaticParams() {
     )
 }
 
-export default async function CategroyPage(parmas: { params: { category: string, page:string } }) {
+export default async function categroyPage(parmas: { params: { category: string, page:string } }) {
     const category = parmas.params.category
     const page = parmas.params.page
     const categorypage = await categoryData(category) 

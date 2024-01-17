@@ -429,38 +429,9 @@ export const DeliveryInformationComponent = () => {
 
 }
 
+
 export const RefundInformationComponent = () => {
-  const { photo } = useAuth()
   const { closeModal } = useModal();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = event.target.files?.[0];
-    setSelectedFile(selected || null);
-  };
-
-  const handleConfirm = async () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append('images', selectedFile);
-
-      try {
-        const response = await axios.post('/api/image/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          withCredentials: true,
-        });
-
-        const imageUrl = response.data;
-        console.log(imageUrl)
-
-        closeModal();
-      } catch (error) {
-      }
-    }
-  };
 
   return (
     <div
@@ -477,7 +448,7 @@ export const RefundInformationComponent = () => {
       }}
     >
       <div
-        className='mx-auto w-[500px] h-[800px] overflow-hidden bg-white flex flex-col justify-between'
+        className='mx-auto w-[500px] h-[800px] bg-white flex flex-col'
         style={{
           backgroundColor: 'white',
           opacity: '1',
@@ -485,67 +456,58 @@ export const RefundInformationComponent = () => {
         }}
       >
         <div className='flex items-center justify-between p-[40px]'>
-          <span className='text-black text-[20px] font-bold'>이미지 업로드</span>
+          <span className='flex-1 text-center text-black text-[20px] font-bold'>교환/반품 안내</span>
           <button onClick={closeModal} className='text-black text-[20px] font-bold'><FontAwesomeIcon icon={faX} /></button>
         </div>
-        <div className='w-[100%] h-[80%] p-[40px] flex flex-col items-center justify-between gap-[20px]'>
-          {selectedFile ? (
-            <Image
-              src={URL.createObjectURL(selectedFile)}
-              alt='SelectedProfileImage'
-              width={500}
-              height={500}
-              style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-          ) : (
-            <Image
-              src={photo}
-              alt='OriginalProfileImage'
-              width={500}
-              height={500}
-              style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-          )}
-          <div className='flex items-center justify-between gap-[20px] w-[100%]'>
-            <input type='file' accept='image/*' onChange={handleFileChange} ref={fileInputRef} className='hidden' id='fileInput' />
-            {selectedFile ? (
-              <div className='text-black font-bold overflow-hidden max-w-full'>
-                <span
-                  className='truncate'
-                  style={{
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    WebkitLineClamp: 1,
-                  }}
-                >
-                  {selectedFile.name.length > 20
-                    ? `${selectedFile.name.substring(0, 20)}...${selectedFile.name.split('.').pop()}`
-                    : selectedFile.name
-                  }
-                </span>
-              </div>
-            ) : (
-              <div className='text-black font-bold overflow-hidden max-w-full'>
-                <span
-                  className='truncate'
-                  style={{
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    WebkitLineClamp: 1,
-                  }}
-                >
-                  파일을 추가(선택)해 주세요.
-                </span>
-              </div>
-            )}
-            <label htmlFor='fileInput' className='cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-md r-0'>
-              파일 선택
-            </label>
+        <div className='overflow-y-auto scrollbar-hide '>
+          <div className='mx-[5%]'>
+            <p className='font-bold text-[16px] my-[15px]'>취소 및 반품 수수료 안내</p>
+            <div className='text-center mb-[20px] border text-center text-[12px]'>
+              <tr>
+                <td className='w-[50%] text-[14px] p-[10px] border-b border-r bg-gray-100'>입금 대기~주문 접수</td>
+                <td className='w-[50%] text-[14px] p-[10px] border-b'>무료</td>
+              </tr>
+              <tr>
+                <td className='w-[50%] text-[14px] p-[10px] border-b border-r bg-gray-100'>상품 준비 중부터</td>
+                <td className='w-[50%] text-[14px] p-[10px] border-b'>27,500원</td>
+              </tr>
+              <tr>
+                <td className='w-[50%] border-b border-r bg-gray-100'>
+                  <p className='text-[14px] pt-[20px]'>배송 준비 중부터</p>
+                </td>
+                <td className='w-[50%] text-[14px] p-[10px] border-b'>150,000원 + 상품가액의 15~30% (관부가세 및 추가 배송비 등)</td>
+              </tr>
+            </div>
+            <p className='font-bold my-[10px]'>※ 추가 반품비 안내</p>
+            <li className='text-[14px] mb-[15px]'>기본 반품 수수료 외 추가 반품비가 발생할 수 있으며, 추가 반품비 최대 청구 금액은 상품금액의 30%를 넘지 않습니다.</li>
+            <li className='text-[14px] mb-[15px]'>추가 반품비는 반품으로 인해 해외로 재입국 시 통관에 필요한 관부가세 및 배송비 등이며, 모든 비용은 증빙서류에 근거하여 실비로 청구됩니다.</li>
+            <li className='text-[14px] mb-[15px]'>정확한 반품 비용은 실비를 근거로 청구하기 때문에 반품 진행 시, 확인하실 수 있습니다.</li>
+            <p className='font-bold my-[10px]'>반품/교환 신청 가능 기간</p>
+            <li className='text-[14px] mb-[15px]'>상품 수령 후 7일 이내 트렌비 고객센터 접수</li>
+            <li className='text-[14px] mb-[15px]'>반품 신청 후 접수일 포함 3일 이내 택배 수거 접수 필요</li>
+            <p className='font-bold my-[10px]'>반품/교환 신청 유의사항</p>
+            <li className='text-[14px] mb-[15px]'>홈리빙 또는 일부 대형 가구의 상품 상세페이지에 별도 교환/환불 정책이 고지된 경우 우선 적용될 수 있습니다.</li>
+            <li className='text-[14px] mb-[15px]'>파트너사의 가격 조정/세일 및 환율 변동 등으로, 동일 상품을 교환하는 경우 상품 가격 변동에 따른 결제 금액의 차이가 발생할 수 있습니다.</li>
           </div>
-        </div>
-        <div className='w-[100%] h-[70px] overflow-hidden flex text-[20px]'>
-          <button onClick={closeModal} className='w-[50%] h-[100%] bg-[#333333] font-bold text-white'>닫기</button>
-          <button onClick={handleConfirm} className='flex-1 bg-[#111111] font-bold text-white'>확인</button>
+          <div className='mx-[5%]'>
+            <p className='font-bold my-[10px]'>반품/교환 기준</p>
+            <p className='font-bold text-[14px] my-[10px]'>상품 하자, 오배송 등 판매자 귀책사유에 해당하는 경우 무료 반품/교환해 드립니다.</p>
+            <li className='text-[14px] mb-[15px]'>상품 수령 후 30일 이내 트렌비 고객센터 접수, 접수일 포함 3일 이내 반품 주소지로 택배 수거 접수 필요</li>
+            <li className='text-[14px] mb-[15px]'>상품 하자/불량은 해당 브랜드의 품질 판단 기준을 바탕으로 한 [상품 하자 기준]에 따릅니다.</li>
+            <p className='font-bold text-[14px] my-[10px]'>아래 판매자 귀책사유에 해당하지 않는 경우, 반품/교환 정책과 수수료는 위 명시된 기준에 따릅니다.</p>
+            <li className='text-[14px] mb-[15px]'>고객님의 단순 변심, 과실 혹은 판단 착오(사이즈, 색상 등을 잘못 구입하신 경우)일 경우</li>
+            <li className='text-[14px] mb-[15px]'>하자 기준에 부합하지 않는 경우</li>
+            <li className='text-[14px] mb-[15px]'>개런티카드 및 보증서 미제공으로 인한 반품 및 교환(현지 대부분의 명품 매장은 개런티카드 및 보증서가 제공되지 않습니다.)</li>
+            <p className='font-bold text-[14px] my-[10px]'>반품/교환 불가 안내</p>
+            <li className='text-[14px] mb-[15px]'>반품 신청 기한이 경과한 경우</li>
+            <li className='text-[14px] mb-[15px]'>상품 포장을 개봉 후 택(TAG) 제거, 라벨 및 상품 훼손으로 상품의 가치가 현저히 감소한 경우</li>
+            <li className='text-[14px] mb-[15px]'>상품의 사용 또는 일부 소비에 의하여 상품의 가치가 현저히 감소한 경우</li>
+            <li className='text-[14px] mb-[15px]'>수영복, 란제리, 스타킹, 양말, 마스크 등의 상품을 시착 또는 부착 필름 제거한 경우 (위생상의 이유)</li>
+            <li className='text-[14px] mb-[15px]'>영수증, 정품 보증서, 구성품(박스, 더스트 백, 포장 비닐, 쇼핑백 등) 등 동봉된 패키지 누락 및 훼손될 경우</li>
+            <li className='text-[14px]'>프리오더 상품, 고객의 요청에 의한 주문제작 상품 및 지류(카드, 엽서, 책, 랩핑페이퍼, 벽지 등)</li>
+          </div>
+          <div className='h-[1px] w-[90%] mx-[5%] bg-gray-300 my-[25px]'></div>
+          <p className='mx-[5%] text-[11px]'>※ 교환/반품 시 택 제거, 구성품 훼손 및 누락 등 배송 시 상태와 다른 경우 반품이 거부될 수 있으며, 이때 발생하는 추가비용(배송비용 및 관부가세 등)은 고객 부담이오니 주의해 주시기 바랍니다.</p>
         </div>
       </div>
     </div>
@@ -554,37 +516,7 @@ export const RefundInformationComponent = () => {
 }
 
 export const CardInstallmentComponent = () => {
-  const { photo } = useAuth()
   const { closeModal } = useModal();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = event.target.files?.[0];
-    setSelectedFile(selected || null);
-  };
-
-  const handleConfirm = async () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append('images', selectedFile);
-
-      try {
-        const response = await axios.post('/api/image/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          withCredentials: true,
-        });
-
-        const imageUrl = response.data;
-        console.log(imageUrl)
-
-        closeModal();
-      } catch (error) {
-      }
-    }
-  };
 
   return (
     <div
@@ -609,71 +541,14 @@ export const CardInstallmentComponent = () => {
         }}
       >
         <div className='flex items-center justify-between p-[40px]'>
-          <span className='text-black text-[20px] font-bold'>이미지 업로드</span>
+          <span className='text-black text-[20px] font-bold'>1월 무이자 카드 할부 안내</span>
           <button onClick={closeModal} className='text-black text-[20px] font-bold'><FontAwesomeIcon icon={faX} /></button>
         </div>
-        <div className='w-[100%] h-[80%] p-[40px] flex flex-col items-center justify-between gap-[20px]'>
-          {selectedFile ? (
-            <Image
-              src={URL.createObjectURL(selectedFile)}
-              alt='SelectedProfileImage'
-              width={500}
-              height={500}
-              style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-          ) : (
-            <Image
-              src={photo}
-              alt='OriginalProfileImage'
-              width={500}
-              height={500}
-              style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-          )}
-          <div className='flex items-center justify-between gap-[20px] w-[100%]'>
-            <input type='file' accept='image/*' onChange={handleFileChange} ref={fileInputRef} className='hidden' id='fileInput' />
-            {selectedFile ? (
-              <div className='text-black font-bold overflow-hidden max-w-full'>
-                <span
-                  className='truncate'
-                  style={{
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    WebkitLineClamp: 1,
-                  }}
-                >
-                  {selectedFile.name.length > 20
-                    ? `${selectedFile.name.substring(0, 20)}...${selectedFile.name.split('.').pop()}`
-                    : selectedFile.name
-                  }
-                </span>
-              </div>
-            ) : (
-              <div className='text-black font-bold overflow-hidden max-w-full'>
-                <span
-                  className='truncate'
-                  style={{
-                    display: '-webkit-box',
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    WebkitLineClamp: 1,
-                  }}
-                >
-                  파일을 추가(선택)해 주세요.
-                </span>
-              </div>
-            )}
-            <label htmlFor='fileInput' className='cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-md r-0'>
-              파일 선택
-            </label>
-          </div>
-        </div>
-        <div className='w-[100%] h-[70px] overflow-hidden flex text-[20px]'>
-          <button onClick={closeModal} className='w-[50%] h-[100%] bg-[#333333] font-bold text-white'>닫기</button>
-          <button onClick={handleConfirm} className='flex-1 bg-[#111111] font-bold text-white'>확인</button>
+        <div className='relative h-[700px] mx-[5%] mb-[5%]'>
+          <Image src={'https://image-cdn.trenbe.com/1000/1704674983001-0cbfc70e-182b-49cb-9a7d-0fa3ab0fc561.jpg'} alt={''} fill></Image>
         </div>
       </div>
     </div>
   );
 
 }
-
