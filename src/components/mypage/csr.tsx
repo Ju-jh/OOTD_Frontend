@@ -1,6 +1,6 @@
 'use client'
 
-import { GET_POINT, GET_PHONE_NUMBER, LOGOUT } from '@/constants/endpoint'
+import { GET_POINT, GET_PHONE_NUMBER, LOGOUT, CHANGENAME, GET_NAME } from '@/constants/endpoint'
 import { GOOGLE_LOGIN_LINK, Home_Link, KAKAO_LOGIN_LINK } from '@/constants/link'
 import { useDarkMode } from '@/hooks/context/darkMode'
 import { useAuth } from '@/hooks/context/isLogined'
@@ -9,7 +9,6 @@ import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import async from './../../containers/detail/detailorder/ssr';
 
 
 export const MyBasicInfoComponent = () => {
@@ -221,12 +220,13 @@ export const MyPageSellComponent = () => {
 
 export const MyPageEditInfoComponent = () => {
 
-  const { email, name } = useAuth()
+  const { email } = useAuth()
   const { darkMode } = useDarkMode()
   const { isModalOpen, openModal } = useModal()
   const [ otherName, setOtherName ] = useState('')
   const [ isNameValid, setIsNameValid ] = useState(false);
   const [ isTyped, setIsTyped ] = useState(false);
+  const [ name, setName ] = useState('')
   const [ phoneNumber, setPhoneNumber] = useState('휴대폰 인증이 되지 않았습니다.')
 
   const handleNameChange = (e : any) => {
@@ -256,9 +256,45 @@ export const MyPageEditInfoComponent = () => {
     }
   }
 
+  const getName = async () => {
+    await axios
+    .get(GET_NAME, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    })
+    .then((response) => {
+      if (response) {
+        if (response.data) {
+          setName(response.data)
+          setOtherName(response.data)        }
+      } 
+    })
+  }
+
+  const clickChangeNameBtn = (otherName:string) => {
+    axios
+    .post(CHANGENAME , {otherName}, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    })
+    .then((response) => {
+      if (response) {
+        openModal('ChangeNameAlertComponent')
+        getName()
+        console.log('성공')
+      }
+    })
+    .catch(() => {
+      });
+  }
+
   useEffect(() => {
-    console.log('초기화')
     getPhoneNumber()
+    getName()
   },[isModalOpen])
 
   return (
@@ -300,6 +336,7 @@ export const MyPageEditInfoComponent = () => {
           </div>
           <button 
               className='w-[80%] h-[40px] flex items-center justify-center  rounded-md shadow-md bg-white hover:bg-slate-200 mt-[20px]'
+              onClick={()=>clickChangeNameBtn(otherName)}
             >
               <div className='inline-block mr-[10px]'>
               </div>
