@@ -11,7 +11,7 @@ import React, { useRef, useState } from 'react';
 
 export const PhotoChangeModalComponent = () => {
   const { photo } = useAuth()
-  const { closeModal } = useModal();
+  const { openModal, closeModal } = useModal();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,10 +33,10 @@ export const PhotoChangeModalComponent = () => {
           withCredentials: true,
         });
 
-        const imageUrl = response.data;
-        console.log(imageUrl)
-
-        closeModal();
+        if (response) { 
+          closeModal();
+          openModal('ChangePhotoAlertComponent')
+        }
       } catch (error) {
       }
     }
