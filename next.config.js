@@ -26,6 +26,11 @@ const nextConfig = {
         port: '',
       },
       {
+        protocol: 'https',
+        hostname: 'image-cdn.trenbe.com',
+        port: '',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
         port: '4000',
