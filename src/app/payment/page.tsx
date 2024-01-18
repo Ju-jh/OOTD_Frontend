@@ -6,7 +6,7 @@ import PaymentContainer from "@/containers/payment/ssr"
 export default async function paymentPage() {
 
     return (
-        <main className="Main flex flex-col w-full min-h-[1300px] pt-[80px]">
+        <main className="Main flex flex-col w-full min-h-[1300px] pt-[80px] bg-gray-200">
             <PaymentContainer/>
         </main>
     )

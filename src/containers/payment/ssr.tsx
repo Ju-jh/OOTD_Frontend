@@ -6,7 +6,7 @@ import PaymentWindowComponent from "@/components/payment/paymentwindow/csr";
 export default function PaymentContainer() {
 
   return (
-    <section className='mx-[15%]'>
+    <section className='mx-[50px]'>
       <PaymentWindowComponent/>
     </section>
   );
