@@ -20,33 +20,48 @@ export default function PaymentWindowComponent() {
     const [isEmail, setIsEmail] = useState("sg4582@naver.com")
     const [isAddr, setIsAddr] = useState("신사동 661-16")
     const [isPostcode, setIsPostcode] = useState("06018")
+    const [isCancel, setIsCancel] = useState(false)
+    const [isBuy, setIsBuy] = useState(false)
 
-    const onClickPg = (pg:string) => {
+    const cancelCheckboxChange = () => {
+        setIsCancel(!isCancel)
+    }
+
+    const buyCheckboxChange = () => {
+        setIsBuy(!isBuy)
+    }
+
+    const onClickPg = (pg: string) => {
         setIsPG(pg)
     }
 
     const onClickPayment = () => {
-        if (!window.IMP) return;
-        /* 1. 가맹점 식별하기 */
-        const { IMP } = window;
-        IMP.init("imp57123366"); // 가맹점 식별코드
+        if (isCancel && isBuy) {
+            if (!window.IMP) return;
+            /* 1. 가맹점 식별하기 */
+            const { IMP } = window;
+            IMP.init("imp57123366"); // 가맹점 식별코드
 
-        /* 2. 결제 데이터 정의하기 */
-        const data: RequestPayParams = {
-            pg: isPG, // PG사 : https://developers.portone.io/docs/ko/tip/pg-2 참고
-            pay_method: isPay, // 결제수단
-            merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
-            amount: isAmount, // 결제금액
-            name: "아임포트 결제 데이터 분석", // 주문명
-            buyer_name: isName, // 구매자 이름
-            buyer_tel: isTel, // 구매자 전화번호
-            buyer_email: isEmail, // 구매자 이메일
-            buyer_addr: isAddr, // 구매자 주소
-            buyer_postcode: isPostcode, // 구매자 우편번호
-        };
+            /* 2. 결제 데이터 정의하기 */
+            const data: RequestPayParams = {
+                pg: isPG, // PG사 : https://developers.portone.io/docs/ko/tip/pg-2 참고
+                pay_method: isPay, // 결제수단
+                merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
+                amount: isAmount, // 결제금액
+                name: "아임포트 결제 데이터 분석", // 주문명
+                buyer_name: isName, // 구매자 이름
+                buyer_tel: isTel, // 구매자 전화번호
+                buyer_email: isEmail, // 구매자 이메일
+                buyer_addr: isAddr, // 구매자 주소
+                buyer_postcode: isPostcode, // 구매자 우편번호
+            };
 
-        /* 4. 결제 창 호출하기 */
-        IMP.request_pay(data, callback);
+            /* 4. 결제 창 호출하기 */
+            IMP.request_pay(data, callback);
+
+        }else{
+            alert("필수 약관에 동의해주세요.");
+        }
     };
 
     function callback(response: RequestPayResponse) {
@@ -76,15 +91,15 @@ export default function PaymentWindowComponent() {
                                 <tbody>
                                     <tr>
                                         <td className="p-[10px]">이름</td>
-                                        <td>username</td>
+                                        <td>{isName}</td>
                                     </tr>
                                     <tr>
                                         <td className="p-[10px]">연락처</td>
-                                        <td>010-1111-1111</td>
+                                        <td>{isTel}</td>
                                     </tr>
                                     <tr>
                                         <td className="p-[10px]">이메일</td>
-                                        <td>사용자 이메일</td>
+                                        <td>{isEmail}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -95,7 +110,7 @@ export default function PaymentWindowComponent() {
                                 <button className="p-[8px] text-[12px] border">배송정보 변경</button>
                             </div>
                             <div className="mb-[25px]">
-                                <p className="font-bold text-[25px] mb-[10px]">이름</p>
+                                <p className="font-bold text-[25px] mb-[10px]">{isName}</p>
                                 <p className="mb-[10px]">주소</p>
                                 <p>전화번호</p>
                             </div>
@@ -246,7 +261,7 @@ export default function PaymentWindowComponent() {
                                         <p className="text-[15px]">pay</p>
                                     </div>
                                 </button>
-                                <button onClick={e => onClickPg("naverpay")}  className="w-[120px] h-[40px] border font-bold">
+                                <button onClick={e => onClickPg("naverpay")} className="w-[120px] h-[40px] border font-bold">
                                     <div className="flex justify-center place-items-center">
                                         <Image src={"/images/navericon.png"} alt={""} width={20} height={20} />
                                         <p className="text-[15px] ml-[3px]">pay</p>
@@ -313,12 +328,12 @@ export default function PaymentWindowComponent() {
                             </div>
                             <div className="flex flex-col w-full py-[15px] mt-[10px]">
                                 <div className="flex w-full mb-[15px]">
-                                    <input type="checkbox" style={{ zoom: 1.5 }} />
+                                    <input type="checkbox" style={{ zoom: 1.5 }} onChange={buyCheckboxChange} />
                                     <span className="flex-1 ml-[5px] text-[18px] font-bold">[필수] 구매 전 필수 동의사항</span>
                                     <FontAwesomeIcon className="w-[20px] h-[20px] text-[20px]" icon={faChevronDown} />
                                 </div>
                                 <div className="flex w-full mb-[10px]">
-                                    <input type="checkbox" style={{ zoom: 1.5 }} />
+                                    <input type="checkbox" style={{ zoom: 1.5 }} onChange={cancelCheckboxChange} />
                                     <span className="ml-[5px] text-[18px] font-bold">[필수] 상품별 취소/반품 조건 안내</span>
                                 </div>
                                 <table className="w-full border">
