@@ -50,7 +50,7 @@ export default function CategoryListComponent({ categoryname, category, page, to
             <ul className="flex flex-wrap w-full">
                 {category.map((value: any, index: any) => {
                     return (
-                        <Link className="min-w-[160px] min-h-[280px] w-[25%] pr-[5%]" key={index} href={`/category/item/${value.i_id}`}>
+                        <Link className="min-w-[160px] min-h-[280px] w-[25%] pr-[5%]" key={index} href={`/category/${categoryname}/item/${value.i_id}`}>
                             <div className="relative h-[60%]">
                                 <div className="absolute opacity-10 rounded-lg bg-gray-500 w-full h-full z-20 "></div>
                                 <Image className="rounded-lg" src={value.photo ? value.photo : "/images/images.jpg"} alt={""} fill={true} sizes="100%" />
