@@ -11,7 +11,7 @@ type Data = {
 
 const CategoryContainer = ({ serverRenderedData }: Data) => {
   return (
-    <section className='p-[20px] mb-[5px]'>
+    <section className='w-[100%] h-[150px] mx-auto p-[20px] mb-[5px] '>
       <CategoryComponent serverRenderedData={serverRenderedData} />
     </section>
   );

@@ -18,8 +18,8 @@ export const MyBasicInfoComponent = () => {
   const { openModal } = useModal()
   const [ point, setPoint] =useState('3,000')
 
-  const clickLogoutBtn = () => {
-      axios
+  const clickLogoutBtn = async () => {
+      await axios
       .get(LOGOUT , {
         headers: {
           "Content-Type": "application/json",

@@ -56,7 +56,7 @@ export default async function HomePage() {
   const CategoryData = await fetchCategoryServerRenderedData();
   const ProductRankingData = await fetchProductRankingServerRenderedData();
   return (
-    <main className='Main flex flex-col  w-full min-h-[1300px] pt-[80px]'>
+    <main className='Main flex flex-col w-[100%] min-h-[1300px] pt-[80px]'>
       <AdvertisementContainer serverRenderedData={AdvertisementData}/>
       <CategoryContainer serverRenderedData={CategoryData}/>
       <ProductRankingContainer serverRenderedData={ProductRankingData}/>

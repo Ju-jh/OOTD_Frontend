@@ -4,8 +4,11 @@
 'use client'
 
 import { EVENT_COLOR } from "@/constants/color";
+import { GET_ITEM_LIKE, PRESS_LIKE_BUTTON } from '@/constants/endpoint';
+import { useDarkMode } from '@/hooks/context/darkMode';
 import { faChevronLeft, faChevronRight, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from 'axios';
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -13,17 +16,23 @@ import { useEffect, useState } from "react";
 
 type Data = {
     categoryname: string
-    category: [];
+    category: [
+        { i_id: string }
+    ];
     page: string
     totalpage: number
 }
 
 export default function CategoryListComponent({ categoryname, category, page, totalpage }: Data) {
-
-    const [isHeart, setIsHeart] = useState(false)
+    
+    const { darkMode } = useDarkMode()
+    const [items, setItems] = useState(category)
+    const [heartStates, setHeartStates] = useState(category.map(() => false));
     const [isPageNumber, setIsPageNumber] = useState(parseInt(page))
     const [startPage, setStartPage] = useState(0)
+    const [isApiCompleted, setIsApiCompleted] = useState(false)
     const pageList = []
+
 
     for (let i = 0; i < totalpage; i++) {
         pageList.push(i)
@@ -45,22 +54,79 @@ export default function CategoryListComponent({ categoryname, category, page, to
         }
     }
 
+    const clickLikeButton = (itemId: number) => {
+        axios
+        .post(PRESS_LIKE_BUTTON, {itemId}, {
+            headers: {
+            "Content-Type": "application/json",
+            },
+            withCredentials: true,
+        })
+        .then(() => {
+            setHeartStates
+        })
+    }
+
+    const getItemLike = (iIds: any) => {
+        axios
+        .post(GET_ITEM_LIKE, {iIds}, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            withCredentials: true,
+        })
+        .then((response) => {
+            setHeartStates(response.data.results)
+
+        })
+    }
+
+    // const pushButtonHal = async () => {
+    //     await category.map((item, index) => {
+    //         item.
+    //     })
+    //     setItems()
+    // }
+
+    useEffect(() => {
+        const iIds = (category.map((item) => item.i_id))
+        getItemLike(iIds)
+            console.log(category)
+
+    },[category])
+
     return (
         <div className="w-[65%]">
             <ul className="flex flex-wrap w-full">
-                {category.map((value: any, index: any) => {
+                {items.map((value: any, index: any) => {
                     return (
-                        <Link className="min-w-[160px] min-h-[280px] w-[25%] pr-[5%]" key={index} href={`/category/${categoryname}/item/${value.i_id}`}>
-                            <div className="relative h-[60%]">
-                                <div className="absolute opacity-10 rounded-lg bg-gray-500 w-full h-full z-20 "></div>
-                                <Image className="rounded-lg" src={value.photo ? value.photo : "/images/images.jpg"} alt={""} fill={true} sizes="100%" />
-                                <div className="absolute z-30 bottom-2 right-2">
-                                    <button onClick={(e) => { e.preventDefault(); setIsHeart(!isHeart) }}>
-                                        <FontAwesomeIcon className={`h-[16px] w-[16px] text-[16px] ${isHeart ? "text-blue-300" : "text-red-500"}`} icon={faHeart} />
-                                    </button>
+                        <div className="min-w-[160px] min-h-[280px] w-[25%] pr-[5%]" key={index}>
+                            <Link href={`/category/${categoryname}/item/${value.i_id}`}>
+                                <div className="relative h-[60%]">
+                                    <div className={`w-full h-full hover:rounded-2xl overflow-hidden transition-all border`} style={{ borderColor: darkMode ? 'transparent' : '' }}>
+                                        <Image  src={value.photo ? value.photo : "/images/images.jpg"} alt={""} width={300} height={300} style={{ objectFit: 'cover', width: '100%', height: '100%'}}/>
+                                    </div>
+                                    <div className="absolute z-30 bottom-2 right-2">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            const updatedHeartStates = [...heartStates];
+                                            updatedHeartStates[index] = !updatedHeartStates[index];
+                                            setHeartStates(updatedHeartStates);
+                                            clickLikeButton(value.i_id)
+                                        }}
+                                        >
+                                        <FontAwesomeIcon
+                                            className={`h-[16px] w-[16px] text-[16px] ${
+                                            heartStates[index] ? "text-red-500" : "text-blue-300"
+                                            }`}
+                                            icon={faHeart}
+                                        />
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="w-full text-[14px] h-[30%]">
+                            </Link>
+                            <div className="w-full text-[14px] h-[30%] pt-[10px]">
                                 <p className="font-bold">
                                     {value.brand}
                                 </p>
@@ -73,7 +139,7 @@ export default function CategoryListComponent({ categoryname, category, page, to
                                 </div>
                                 <div className="">익일 배송, 가격비교</div>
                             </div>
-                        </Link>
+                        </div>
                     )
                 })}
             </ul>

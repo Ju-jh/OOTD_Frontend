@@ -7,37 +7,53 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useDarkMode } from '@/hooks/context/darkMode';
 import axios from 'axios'
+import Link from 'next/link'
 
+
+interface Item {
+  item:{
+    i_id: number;
+    photo: string;
+    category: string;
+    brand: string;
+    title: string;
+    discount: number;
+    price: number;
+  }
+}
 
 const MyCartComponent = () => {
 
-  const testArray = [1, 2, 3, 4];
   const { darkMode } = useDarkMode();
-
+  
+  const [cartArray, setCartArray] = useState<Item[]>([])
   const [allChecked, setAllChecked] = useState(true);
-  const [checkedItems, setCheckedItems] = useState<{ [key: number]: boolean }>(
-    testArray.reduce((acc, _, index) => ({ ...acc, [index]: true }), {})
-  );
+  const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({});
+
   const checkedCount = Object.values(checkedItems).filter((value) => value).length;
 
 
+  console.log(checkedItems)
   const handleCheckAllChange = () => {
-    setAllChecked(!allChecked);
-    setCheckedItems((prev) => Object.fromEntries(Object.keys(prev).map((key) => [key, !allChecked])));
-  };
-
-  const handleItemCheckChange = (index: number) => {
+    setAllChecked((prevAllChecked) => !prevAllChecked);
     setCheckedItems((prev) => {
-      const updatedCheckedItems = { ...prev, [index]: !prev[index] };
-      setAllChecked(Object.values(updatedCheckedItems).every((value) => value));
-      return updatedCheckedItems;
+      const newCheckedItems: Record<number, boolean> = {};
+      for (let key in prev) {
+        newCheckedItems[key] = !allChecked;
+      }
+      return newCheckedItems;
     });
   };
 
-  console.log(checkedCount)
+  const handleCheckboxChange = (index: number) => {
+      setCheckedItems((prev) => ({
+          ...prev,
+          [index]: !prev[index],
+      }));
+  };
 
-  useEffect(() => {
-    axios
+  const getCartData = () => {
+      axios
       .get(`api/cart/view`, {
         headers: {
           "Content-Type": "application/json",
@@ -45,12 +61,17 @@ const MyCartComponent = () => {
         withCredentials: true,
       })
       .then((response) => {
-        console.log("aaa",response.data);
+        setCartArray(response.data.data);
       })
       .catch((error) => {
         console.error("API 호출 중 오류 발생:", error);
       });
-  })
+  }
+
+  useEffect(() => {
+    getCartData()
+    handleCheckAllChange();
+  },[])
 
 
   return (
@@ -100,21 +121,23 @@ const MyCartComponent = () => {
                 <span className='font-bold text-[17px]'>삭제</span>
               </div>
             </li>
-            {testArray.map((item, index) => (
+            {cartArray.map((item, index) => (
               <li key={index} className={`w-[100%] h-[150px] flex items-center border-b ${darkMode ? 'border-b-[#121212]' : 'border-b-[#dde0e3]'}`}>
                 <div className='w-[5%] h-[100%] flex items-center justify-center text-[#aeb5bb]  '>
-                  <input type="checkbox" name="" id={`item${index}`} checked={checkedItems[index]} onChange={() => handleItemCheckChange(index)} className='relative cursor-pointer hover:default:ring-2 border border-[#aeb5bb] checked:border-none w-[25px] h-[25px] appearance-none rounded-sm checked:bg-[#7732FF]' />
+                  <input type="checkbox" name="" id={`item${index}`} checked={checkedItems[index] || false} onChange={() => handleCheckboxChange(index)} className='relative cursor-pointer hover:default:ring-2 border border-[#aeb5bb] checked:border-none w-[25px] h-[25px] appearance-none rounded-sm checked:bg-[#7732FF]' />
                   <label htmlFor={`item${index}`} className="absolute cursor-pointer z-10  ">
                     <FontAwesomeIcon icon={faCheck} className='w-[15px] h-[15px] text-[15px] checked:text-white' />
                   </label>
                 </div>
                 <div className={`w-[40%] h-[100%] flex items-center justify-between border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}  p-[30px]`}>
-                  <div className='w-[90px] h-[100%]'>
-                    <Image src="/images/components/mycart/item1.png" alt="itemImage" width="90" height="90" />
+                  <div className='w-[90px] h-[100%] mr-[20px]'>
+                    <Link  key={index} href={`category/${item.item.category}/item/${item.item.i_id}` }>
+                      <Image src={item.item.photo} alt="itemImage" width="90" height="90"  style={{ objectFit: 'cover', width: '100%', height: '100%'}}/>
+                    </Link>
                   </div>
                   <div className='w-[240px] h-[100%] flex flex-col items-start justify-center'>
-                    <span className='font-bold'>Herno Laminar</span>
-                    <span>클라우디아 여성 패딩 블랙{index}</span>
+                    <span className='font-bold'>{item.item.title}</span>
+                    <span>{item.item.brand}</span>
                   </div>
                   <div className='w-[260px] h-[100%] bg-red-500'>
 
@@ -126,25 +149,30 @@ const MyCartComponent = () => {
                 <div className={`w-[10%] h-[40%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'} text-[14px]`}>
                   <span className=''>최대</span>
                   <span style={{ color: EVENT_COLOR }}>
-                    16,835<span>원</span>
+                    {(item.item.discount != 0) ? Math.floor(item.item.discount * 0.05).toLocaleString(): Math.floor(item.item.price * 0.05).toLocaleString()}<span>원</span>
                   </span>
                 </div>
                 <div className={`w-[10%] h-[80%] flex flex-col items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'} text-[15px]`}>
                   <span className='line-through text-[#858788]'>
-                    1,539,000<span>원</span>
+                    {item.item.discount != 0 && (
+                      <span className='font-bold text-[17px]'>
+                        {Math.floor(item.item.price).toLocaleString()}<span>원</span>
+                      </span>
+                    )}
                   </span>
-                  <span className='text-[#858788]'>
-                    689,000<span>원</span>
+                  <span className=''>
+                    {(item.item.discount != 0) ? Math.floor(item.item.discount).toLocaleString(): Math.floor(item.item.price).toLocaleString()}<span>원</span>
                   </span>
                   <span style={{ color: EVENT_COLOR }}>
-                    -20,670<span>원</span>
-                  </span>
-                  <span style={{ color: EVENT_COLOR }}>
-                    (쿠폰할인)
+                    {item.item.discount != 0 && (
+                      <span className=''>
+                        -{(Math.floor(item.item.price)-Math.floor(item.item.discount)).toLocaleString()}<span>원</span>
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className={`w-[15%] h-[50%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}`}>
-                  <span className='font-bold text-[17px]'>668,330<span>원</span></span>
+                  <span className='font-bold text-[17px]'>{(item.item.discount != 0) ? Math.floor(item.item.discount).toLocaleString(): Math.floor(item.item.price).toLocaleString()}<span>원</span></span>
                 </div>
                 <div className={`w-[10%] h-[50%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}`}>
                   <button className='w-[80px] h-[50px] flex items-center border border-[#CFD5DB] rounded-md justify-center text-[14px] font-semibold'>
