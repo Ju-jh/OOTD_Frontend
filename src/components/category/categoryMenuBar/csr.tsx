@@ -16,31 +16,20 @@ export default function CategoryMenuBarComponent() {
     const [isHighestPrice, setIsHighestPrice] = useState(false)
     const [isLowestPrice, setIsLowestPrice] = useState(false)
 
+    const categoryBtn = () => {
+        setIsCategory(!isCategory)
+    }
 
+    const brandBtn = () => {
+        setIsBrand(!isBrand)
+    }
 
-    const meueBarHidden = (barNumber: number) => {
-        if (barNumber == 1) {
-            setIsCategory(!isCategory)
-            setIsBrand(false)
-            setIsPrice(false)
-            setIsDiscount(false)
-        } else if (barNumber == 2) {
-            setIsCategory(false)
-            setIsBrand(!isBrand)
-            setIsPrice(false)
-            setIsDiscount(false)
-        } else if (barNumber == 3) {
-            setIsCategory(false)
-            setIsBrand(false)
-            setIsPrice(false)
-            setIsDiscount(!isDiscount)
+    const discountBtn = () => {
+        setIsDiscount(!isDiscount)
+    }
 
-        } else {
-            setIsCategory(false)
-            setIsBrand(false)
-            setIsPrice(!isPrice)
-            setIsDiscount(false)
-        }
+    const priceBtn = () => {
+        setIsPrice(!isPrice)
     }
 
     const highestBtn = () => {
@@ -72,7 +61,7 @@ export default function CategoryMenuBarComponent() {
     return (
         <div className="w-[25%] text-[15px]">
             <div className="w-full border-y border-gray-400">
-                <div className="flex justify-between px-[10px]" onClick={() => meueBarHidden(1)}>
+                <div className="flex justify-between px-[10px]" onClick={categoryBtn}>
                     <div className="py-[15px] font-bold">
                         카테고리
                     </div>
@@ -122,7 +111,7 @@ export default function CategoryMenuBarComponent() {
                 </div>
             </div>
             <div className="w-full border-b border-gray-400">
-                <div className="flex justify-between px-[10px]" onClick={() => meueBarHidden(2)}>
+                <div className="flex justify-between px-[10px]" onClick={brandBtn}>
                     <div className="py-[15px] font-bold">
                         브렌드
                     </div>
@@ -136,7 +125,7 @@ export default function CategoryMenuBarComponent() {
                 </div>
             </div>
             <div className="w-full border-b border-gray-400">
-                <div className="flex justify-between px-[10px]" onClick={() => meueBarHidden(3)}>
+                <div className="flex justify-between px-[10px]" onClick={discountBtn}>
                     <div className="py-[15px] font-bold">
                         가격
                     </div>
@@ -153,7 +142,7 @@ export default function CategoryMenuBarComponent() {
                                     {isLowestPrice ? <FontAwesomeIcon icon={faCaretUp} /> : <FontAwesomeIcon icon={faCaretDown} />}
                                 </div>
                             </button>
-                            <ul className={`overflow-y-scroll transition-all duration-500 ${isLowestPrice ? 'max-h-[200px]' : 'max-h-0'} mt-[10px] pr-[3px] max-h-[200px] bg-gray-200 text-black`}>
+                            <ul className={`overflow-y-scroll transition-all duration-500 ${isLowestPrice ? 'max-h-[200px]' : 'max-h-0 hidden'} mt-[10px] pr-[3px] max-h-[200px] bg-gray-200 text-black`}>
                                 <li>산택안함</li>
                                 <li>10만</li>
                                 <li>20만</li>
@@ -178,7 +167,7 @@ export default function CategoryMenuBarComponent() {
                                     {isHighestPrice ? <FontAwesomeIcon icon={faCaretUp} /> : <FontAwesomeIcon icon={faCaretDown} />}
                                 </div>
                             </button>
-                            <ul className={`relative z-1 overflow-y-scroll transition-all duration-200 ${isHighestPrice ? 'max-h-[200px]' : 'max-h-0'} mt-[10px] w-full pr-[3px] max-h-[200px] bg-gray-200 text-black`}>
+                            <ul className={`relative z-1 overflow-y-scroll transition-all duration-200 ${isHighestPrice ? 'max-h-[200px]' : 'max-h-0 hidden'} mt-[10px] w-full pr-[3px] max-h-[200px] bg-gray-200 text-black`}>
                                 <li>10만</li>
                                 <li>20만</li>
                                 <li>30만</li>
@@ -197,7 +186,7 @@ export default function CategoryMenuBarComponent() {
                 </div>
             </div>
             <div className="w-full border-b border-gray-400">
-                <div className="flex justify-between px-[10px]" onClick={() => meueBarHidden(4)}>
+                <div className="flex justify-between px-[10px]" onClick={priceBtn}>
                     <div className="py-[15px] font-bold">
                         할인율
                     </div>
