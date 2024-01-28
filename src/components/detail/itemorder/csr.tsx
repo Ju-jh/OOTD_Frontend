@@ -17,91 +17,61 @@ import { useEffect, useState } from "react";
 export default function ItemOrderComponent(itemList: any) {
 
     const [heartStates, setHeartStates] = useState(Boolean);
-
-    const onClickPayment = () => {
-        if (!window.IMP) return;
-        /* 1. 가맹점 식별하기 */
-        const { IMP } = window;
-        IMP.init("imp57123366"); // 가맹점 식별코드
-
-        /* 2. 결제 데이터 정의하기 */
-        const data: RequestPayParams = {
-            pg: "kakaopay", // PG사 : https://developers.portone.io/docs/ko/tip/pg-2 참고
-            pay_method: "card", // 결제수단
-            merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
-            amount: 1000, // 결제금액
-            name: "아임포트 결제 데이터 분석", // 주문명
-            buyer_name: "홍길동", // 구매자 이름
-            buyer_tel: "01012341234", // 구매자 전화번호
-            buyer_email: "sg4582@naver.com", // 구매자 이메일
-            buyer_addr: "신사동 661-16", // 구매자 주소
-            buyer_postcode: "06018", // 구매자 우편번호
-        };
-
-        /* 4. 결제 창 호출하기 */
-        IMP.request_pay(data, callback);
-    };
-
-    function callback(response: RequestPayResponse) {
-        const { success, error_msg } = response;
-
-        if (success) {
-            alert("결제 성공");
-        } else {
-            alert(`결제 실패: ${error_msg}`);
-        }
-    }
-
     const item = itemList.itemList
-
-    const [isSize, setIsSize] = useState(false)
-
+    const [isSizeBar, setIsSizeBar] = useState(false)
+    const [isSize, setIsSize] = useState("사이즈를 선택해주세요")
+    const itemDetail = [isSize, [item]]
     const discount = Math.round(parseInt(item.discount) / parseInt(item.price) * 100)
 
     const checkBtn = () => {
-        setIsSize(!isSize)
+        setIsSizeBar(!isSizeBar)
+    }
+
+    const sizeBtn = (size: string) => {
+        setIsSize(size)
+        setIsSizeBar(!isSizeBar)
     }
 
     const clickLikeButton = (itemId: number) => {
         axios
-        .post(PRESS_LIKE_BUTTON, {itemId}, {
-            headers: {
-            "Content-Type": "application/json",
-            },
-            withCredentials: true,
-        })
-        .then((response) => {
-            setHeartStates(response.data)
-        })
+            .post(PRESS_LIKE_BUTTON, { itemId }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                setHeartStates(response.data)
+            })
     }
 
     const getIsLiked = (itemId: number) => {
         axios
-        .post(GET_THIS_ITEM_LIKED, { itemId }, {
-            headers: {
-            "Content-Type": "application/json",
-            },
-            withCredentials: true,
-        })
-        .then((response) => {
-            setHeartStates(response.data.results)
-        })
+            .post(GET_THIS_ITEM_LIKED, { itemId }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                setHeartStates(response.data.results)
+            })
     }
 
     const pressCartButton = (itemId: number) => {
         axios
-        .post('/api/cart/press', { itemId }, {
-            headers: {
-            "Content-Type": "application/json",
-            },
-            withCredentials: true,
-        })
-        .then((response) => {
-            console.log(response.data.success)
-        })
+            .post('/api/cart/press', { itemId }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                console.log(response.data.success)
+            })
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getIsLiked(itemList.itemList.i_id)
     })
 
@@ -117,11 +87,11 @@ export default function ItemOrderComponent(itemList: any) {
                                 <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px] mt-[4px]" icon={faChevronRight} />
                             </button>
                             <div>
-                                <button 
+                                <button
                                     className="w-[40px] h-[40px]"
-                                    onClick={()=>clickLikeButton(itemList.itemList.i_id)}
+                                    onClick={() => clickLikeButton(itemList.itemList.i_id)}
                                 >
-                                    <FontAwesomeIcon className={`${heartStates? 'text-red-500' : ''} w-[28px] h-[28px]`}  icon={faHeart} />
+                                    <FontAwesomeIcon className={`${heartStates ? 'text-red-500' : ''} w-[28px] h-[28px]`} icon={faHeart} />
                                 </button>
                                 <button className="w-[40px] h-[40px]">
                                     <FontAwesomeIcon className="w-[28px] h-[28px]" icon={faShareNodes} />
@@ -183,28 +153,34 @@ export default function ItemOrderComponent(itemList: any) {
                             <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px] mt-[4px]" icon={faChevronRight} />
                         </div>
                         <div className="relative w-full">
-                            <div onClick={checkBtn} className={`flex justify-between p-[12px] border ${isSize ? "border-b-0" : "border-1"} border-black`}>
-                                <span className="text-[16px]">사이즈를 선택해주세요.</span>
-                                {isSize ? <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretUp} /> : <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretDown} />}
+                            <div onClick={checkBtn} className={`flex justify-between p-[12px] border ${isSizeBar ? "border-b-0" : "border-1"} border-black`}>
+                                <span className="text-[16px]">{isSize}</span>
+                                {isSizeBar ? <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretUp} /> : <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretDown} />}
                             </div>
-                            <div className={`${isSize ? "" : "hidden"} absolute w-full bg-gray-200 border border-black text-black z-1`}>
-                                <div className="p-[12px]">S</div>
-                                <div className="p-[12px]">M</div>
-                                <div className="p-[12px]">L</div>
-                                <div className="p-[12px]">XL</div>
-                                <div className="p-[12px]">XXL</div>
+                            <div className={`${isSizeBar ? "" : "hidden"} absolute w-full bg-gray-200 border border-black text-black z-1`}>
+                                <div onClick={() => sizeBtn("S")} className="p-[12px]">S</div>
+                                <div onClick={() => sizeBtn("M")} className="p-[12px]">M</div>
+                                <div onClick={() => sizeBtn("L")} className="p-[12px]">L</div>
+                                <div onClick={() => sizeBtn("XL")} className="p-[12px]">XL</div>
+                                <div onClick={() => sizeBtn("XXL")} className="p-[12px]">XXL</div>
                             </div>
                         </div>
                     </div>}
                     <div className="flex justify-between text-[16px] font-bold">
                         <button
                             className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded"
-                            onClick={()=>pressCartButton(itemList.itemList.i_id)}
+                            onClick={() => pressCartButton(itemList.itemList.i_id)}
                         >
                             장바구니
                         </button>
-                        <button onClick={onClickPayment} className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded">구매하기</button>
-                    </div>
+                        <button className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded">
+                            <Link href={{
+                                pathname: "/payment",
+                                query: { item: JSON.stringify(itemDetail) },
+                            }}>
+                                구매하기
+                            </Link>
+                        </button>                    </div>
                 </div>
             </div>
         </section>

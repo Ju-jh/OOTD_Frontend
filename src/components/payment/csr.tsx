@@ -7,11 +7,19 @@ import { EVENT_COLOR } from "@/constants/color";
 import { faChevronDown, faChevronRight, faComment } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RequestPayParams, RequestPayResponse } from "iamport-typings";
+import { SetStateAction, useEffect, useState } from "react";
+import axios from "axios";
 import Image from "next/image";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function PaymentWindowComponent() {
 
+    const params = useSearchParams();
+    const item = params.get('item');
+    const items = JSON.parse(item!)
+    console.log(items);
+
+    // 바로구매 누를시 들어오는 데이터값
     const [isPG, setIsPG] = useState("")
     const [isPay, setIsPay] = useState("card")
     const [isAmount, setIsAmount] = useState(1000)
@@ -20,8 +28,18 @@ export default function PaymentWindowComponent() {
     const [isEmail, setIsEmail] = useState("sg4582@naver.com")
     const [isAddr, setIsAddr] = useState("신사동 661-16")
     const [isPostcode, setIsPostcode] = useState("06018")
+    // 요청값저장
+    const [isUserName, setIsUserName] = useState(isName)
+    const [isUserTel, setIsUserTel] = useState(isTel)
+    const [isUserEmail, setIsUserEmail] = useState(isEmail)
+    const [isShippingAddr, setIsShippingAddr] = useState(isAddr)
+    const [isTotal, setIsTotal] = useState(0)
+    const [isTotalPrice, setIsTotalPrice] = useState(0)
+    const [isTotalDiscount, setIsTotalDiscount] = useState(0)
     const [isCancel, setIsCancel] = useState(false)
     const [isBuy, setIsBuy] = useState(false)
+    const [isUser, setIsUser] = useState(false)
+    const [isShipping, setIsShipping] = useState(false)
 
     const cancelCheckboxChange = () => {
         setIsCancel(!isCancel)
@@ -31,8 +49,86 @@ export default function PaymentWindowComponent() {
         setIsBuy(!isBuy)
     }
 
+    const allCheckboxChange = () => {
+        if (!isCancel) {
+            setIsCancel(!isCancel)
+            if (!isBuy) {
+                setIsBuy(!isBuy)
+            }
+        } else if (isCancel && isBuy) {
+            setIsBuy(!isBuy)
+            setIsCancel(!isCancel)
+        }
+
+    }
+
     const onClickPg = (pg: string) => {
         setIsPG(pg)
+    }
+
+    const userDataModifyBtn = () => {
+        if (isUser) {
+            setIsUser(false)
+        } else {
+            setIsUser(true)
+            setIsName(isUserName)
+            setIsTel(isUserTel)
+            setIsEmail(isUserEmail)
+        }
+    }
+
+    const shippingDataModifyBtn = () => {
+        if (isShipping) {
+            setIsShipping(false)
+        } else {
+            setIsShipping(true)
+            setIsAddr(isShippingAddr)
+            setIsEmail(isUserEmail)
+        }
+    }
+
+    const nameChange = (event: { target: { value: any; }; }) => {
+        setIsUserName(event.target.value);
+    };
+
+    const phonenumberChange = (event: { target: { value: any; }; }) => {
+        setIsUserTel(event.target.value);
+    };
+
+    const emailChange = (event: { target: { value: any; }; }) => {
+        setIsUserEmail(event.target.value);
+    };
+
+    const addrChange = (event: { target: { value: SetStateAction<string>; }; }) => {
+        setIsShippingAddr(event.target.value);
+    }
+
+    const order = (success: boolean) => {
+        axios
+            .post("/api/order/requst", {}, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                console.log(response.data);
+            })
+    }
+
+    const test = () => {
+        axios.delete("/api/order/cancel", {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            data: {
+                oderid: 1
+            },
+            withCredentials: true,
+        })
+            .then((response) => {
+                console.log(response.data);
+            })
     }
 
     const onClickPayment = () => {
@@ -59,7 +155,7 @@ export default function PaymentWindowComponent() {
             /* 4. 결제 창 호출하기 */
             IMP.request_pay(data, callback);
 
-        }else{
+        } else {
             alert("필수 약관에 동의해주세요.");
         }
     };
@@ -68,11 +164,24 @@ export default function PaymentWindowComponent() {
         const { success, error_msg } = response;
 
         if (success) {
+            order(success)
             alert("결제 성공");
         } else {
             alert(`결제 실패: ${error_msg}`);
         }
     }
+
+    useEffect(() => {
+        const total = items[1].map((item: any) => parseInt(item.price) - parseInt(item.discount))
+            .reduce((total: any, price: any) => total + price, 0);
+        const totalPrice = items[1].map((item: any) => parseInt(item.price) + parseInt(item.price))
+            .reduce((total: any, price: any) => total + price, 0);
+        const totalDiscount = items[1].map((item: any) => parseInt(item.discount) + parseInt(item.discount))
+            .reduce((total: any, price: any) => total + price, 0);
+        setIsTotal(total);
+        setIsTotalPrice(totalPrice);
+        setIsTotalDiscount(totalDiscount);
+    }, [items]);
 
     return (
         <div>
@@ -85,21 +194,21 @@ export default function PaymentWindowComponent() {
                         <div className="font-bold mb-[15px] py-[5%] px-[10%] bg-white">
                             <div className="flex mb-[30px] justify-between">
                                 <p className="text-[25px]">주문자 정보</p>
-                                <button className="p-[8px] text-[12px] border">주문자 정보변경</button>
+                                <button onClick={userDataModifyBtn} className="p-[8px] text-[12px] border">{isUser ? "주문자 정보저장" : "주문자 정보변경"}</button>
                             </div>
                             <table>
                                 <tbody>
                                     <tr>
                                         <td className="p-[10px]">이름</td>
-                                        <td>{isName}</td>
+                                        {isUser ? <td><input value={isUserName} onChange={nameChange} type="text" /></td> : <td>{isName}</td>}
                                     </tr>
                                     <tr>
                                         <td className="p-[10px]">연락처</td>
-                                        <td>{isTel}</td>
+                                        {isUser ? <td><input value={isUserTel} onChange={phonenumberChange} type="text" /></td> : <td>{isTel}</td>}
                                     </tr>
                                     <tr>
                                         <td className="p-[10px]">이메일</td>
-                                        <td>{isEmail}</td>
+                                        {isUser ? <td><input value={isUserEmail} onChange={emailChange} type="text" /></td> : <td>{isEmail}</td>}
                                     </tr>
                                 </tbody>
                             </table>
@@ -107,12 +216,12 @@ export default function PaymentWindowComponent() {
                         <div className="font-bold mb-[15px] py-[5%] px-[10%] bg-white">
                             <div className="flex justify-between mb-[30px]">
                                 <p className="text-[25px]">배송 정보</p>
-                                <button className="p-[8px] text-[12px] border">배송정보 변경</button>
+                                <button onClick={shippingDataModifyBtn} className="p-[8px] text-[12px] border">{isShipping ? "배송정보 자장" : "배송정보 변경"}</button>
                             </div>
                             <div className="mb-[25px]">
                                 <p className="font-bold text-[25px] mb-[10px]">{isName}</p>
-                                <p className="mb-[10px]">주소</p>
-                                <p>전화번호</p>
+                                {isShipping ? <input value={isShippingAddr} onChange={addrChange} type="text" className="w-full mb-[10px]" /> : <p className="mb-[10px]">{isShippingAddr}</p>}
+                                {isShipping ? <input value={isUserTel} onChange={phonenumberChange} type="text" className="w-full" /> : <p>{isTel}</p>}
                             </div>
                             <div className="">
                                 <p className="text-[25px]">배송 요청사항</p>
@@ -129,82 +238,34 @@ export default function PaymentWindowComponent() {
                     <div className="py-[5%] px-[10%] mb-[15px] bg-white">
                         <p className="font-bold text-[25px] mb-[15px]">한국 배송 상품</p>
                         <div className="max-h-[600px] overflow-y-auto scrollbar-hide">
-                            <div className="mb-[20px]">
-                                <div className="mb-[20px]">
-                                    <div className="flex w-full h-[200px]">
-                                        <div className="w-[200px] h-[200px]">
-                                            <Image src={"/images/images.jpg"} alt={""} style={{ width: '200px', height: '200px' }} width={200} height={200} />
-                                        </div>
-                                        <div className="flex flex-col flex-1 bg-yellow-200 text-[20px]">
-                                            <p className="text-[20px] font-bold">브렌드</p>
-                                            <p className="my-[7px]">상품 이름</p>
-                                            <p className="mb-[7px]">사이즈</p>
-                                            <div className="flex items-center h-full text-[20px] font-bold">
-                                                <p>가격</p>
+                            {items[1].map((item: any, index: number) => {
+                                return (
+                                    <div key={index} className="mb-[20px]">
+                                        <div className="mb-[20px]">
+                                            <div className="flex w-full h-[200px]">
+                                                <div className="w-[200px] h-[200px]">
+                                                    <Image src={item.photo} alt={""} style={{ width: '200px', height: '200px' }} width={200} height={200} />
+                                                </div>
+                                                <div className="flex flex-col flex-1 text-[20px] pl-[5px]">
+                                                    <p className="text-[20px] font-bold">{item.brand}</p>
+                                                    <p className="my-[7px]">{item.title}</p>
+                                                    <p className="mb-[7px]">{items[0]}</p>
+                                                    <div className="flex items-center h-full text-[20px] font-bold">
+                                                        <p>{(parseInt(item.price) - parseInt(item.discount)).toLocaleString()}원</p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+                                        <div className="w-full h-[4px] bg-black"></div>
                                     </div>
-                                </div>
-                                <div className="w-full h-[4px] bg-black"></div>
-                            </div>
-                            <div className="mb-[20px]">
-                                <div className="mb-[20px]">
-                                    <div className="flex w-full h-[200px]">
-                                        <div className="w-[200px] h-[200px]">
-                                            <Image src={"/images/images.jpg"} alt={""} style={{ width: '200px', height: '200px' }} width={200} height={200} />
-                                        </div>
-                                        <div className="flex flex-col flex-1 bg-yellow-200 text-[20px]">
-                                            <p className="text-[20px] font-bold">브렌드</p>
-                                            <p className="my-[7px]">상품 이름</p>
-                                            <p className="mb-[7px]">사이즈</p>
-                                            <div className="flex items-center h-full text-[20px] font-bold">
-                                                <p>가격</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="w-full h-[4px] bg-black"></div>
-                            </div>
-                            <div className="mb-[20px]">
-                                <div className="mb-[20px]">
-                                    <div className="flex w-full h-[200px]">
-                                        <div className="w-[200px] h-[200px]">
-                                            <Image src={"/images/images.jpg"} alt={""} style={{ width: '200px', height: '200px' }} width={200} height={200} />
-                                        </div>
-                                        <div className="flex flex-col flex-1 bg-yellow-200 text-[20px]">
-                                            <p className="text-[20px] font-bold">브렌드</p>
-                                            <p className="my-[7px]">상품 이름</p>
-                                            <p className="mb-[7px]">사이즈</p>
-                                            <div className="flex items-center h-full text-[20px] font-bold">
-                                                <p>가격</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="w-full h-[4px] bg-black"></div>
-                            </div>
-                            <div className="mb-[20px]">
-                                <div className="mb-[20px]">
-                                    <div className="flex w-full h-[200px]">
-                                        <div className="w-[200px] h-[200px]">
-                                            <Image src={"/images/images.jpg"} alt={""} style={{ width: '200px', height: '200px' }} width={200} height={200} />
-                                        </div>
-                                        <div className="flex flex-col flex-1 bg-yellow-200 text-[20px]">
-                                            <p className="text-[20px] font-bold">브렌드</p>
-                                            <p className="my-[7px]">상품 이름</p>
-                                            <p className="mb-[7px]">사이즈</p>
-                                            <div className="flex items-center h-full text-[20px] font-bold">
-                                                <p>가격</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="w-full h-[4px] bg-black"></div>
-                            </div>
+                                )
+                            })}
                         </div>
                         <div className="flex justify-between text-[25px] font-bold py-[20px]">
-                            <p>총 <span style={{ color: EVENT_COLOR }}>1</span>개</p>
-                            <p>가격</p>
+                            <p>총 <span style={{ color: EVENT_COLOR }}>{items[1].length}</span>개</p>
+                            <p>
+                                {isTotal.toLocaleString()}원
+                            </p>
                         </div>
                     </div>
                     <div className="py-[5%] px-[10%] mb-[10px] bg-white">
@@ -248,20 +309,18 @@ export default function PaymentWindowComponent() {
                         <div>
                             <p className="text-[18px] mb-[10px]">간편결제</p>
                             <div className="flex">
-                                <button onClick={e => onClickPg("kakaopay")} className="w-[120px] h-[40px] border mr-[10px] bg-yellow-300">
+                                <button onClick={e => onClickPg("kakaopay")} className={`w-[120px] h-[40px] ${isPG == "kakaopay" ? "border border-black" : "border"} mr-[10px] bg-yellow-300`}>
                                     <FontAwesomeIcon className="w-[15px] h-[15px] text-[15px]" icon={faComment} />
                                     <span className="ml-[3px] text-[20px] font-bold">pay</span>
                                 </button>
-                                <button onClick={e => onClickPg("tosspay")} className="w-[120px] h-[40px] border font-bold mr-[10px]">
+                                <button onClick={e => onClickPg("tosspay")} className={`w-[120px] h-[40px] ${isPG == "tosspay" ? "border border-black" : "border"} font-bold mr-[10px]`}>
                                     <div className="flex justify-center place-items-center">
                                         <Image src={"/images/tossicon.png"} alt={""} width={20} height={20} />
-                                        <p className="text-[20px] font-bold">
-                                            toss
-                                        </p>
+                                        <p className="text-[20px] font-bold">toss</p>
                                         <p className="text-[15px]">pay</p>
                                     </div>
                                 </button>
-                                <button onClick={e => onClickPg("naverpay")} className="w-[120px] h-[40px] border font-bold">
+                                <button onClick={e => onClickPg("naverpay")} className={`w-[120px] h-[40px] ${isPG == "naverpay" ? "border border-black" : "border"} font-bold`}>
                                     <div className="flex justify-center place-items-center">
                                         <Image src={"/images/navericon.png"} alt={""} width={20} height={20} />
                                         <p className="text-[15px] ml-[3px]">pay</p>
@@ -293,15 +352,15 @@ export default function PaymentWindowComponent() {
                             <tbody>
                                 <tr>
                                     <td className="min-w-[120px] p-[10px] text-[20px]">주문 상품수</td>
-                                    <td className="text-right font-bold">n개</td>
+                                    <td className="text-right font-bold">{items[1].length}개</td>
                                 </tr>
                                 <tr>
                                     <td className="min-w-[120px] p-[10px] text-[20px]">총 상품 가격</td>
-                                    <td className="text-right font-bold">가격</td>
+                                    <td className="text-right font-bold">{isTotalPrice.toLocaleString()}원</td>
                                 </tr>
                                 <tr>
                                     <td className="min-w-[120px] p-[10px] text-[20px]">상품 할인</td>
-                                    <td style={{ color: EVENT_COLOR }} className="text-right font-bold">할인 가격</td>
+                                    <td style={{ color: EVENT_COLOR }} className="text-right font-bold">{isTotalDiscount.toLocaleString()}원</td>
                                 </tr>
                                 <tr>
                                     <td className="min-w-[120px] p-[10px] text-[20px]">O머니 사용</td>
@@ -319,21 +378,21 @@ export default function PaymentWindowComponent() {
                         </table>
                         <div className="flex justify-between py-[15px] border-y-2">
                             <p className="text-[25px] font-bold">총 결제금액</p>
-                            <p className="text-[25px] font-bold">결제금액</p>
+                            <p className="text-[25px] font-bold">{isTotal.toLocaleString()}원</p>
                         </div>
                         <div className="flex flex-col">
                             <div className="flex w-full py-[15px] border-b border-black">
-                                <input type="checkbox" style={{ zoom: 1.5 }} />
+                                <input type="checkbox" checked={isBuy && isCancel ? true : false} style={{ zoom: 1.5 }} onChange={allCheckboxChange} />
                                 <span className="ml-[5px]">주문 정보를 확인하였으며, 약관 전체에 동의합니다.</span>
                             </div>
                             <div className="flex flex-col w-full py-[15px] mt-[10px]">
                                 <div className="flex w-full mb-[15px]">
-                                    <input type="checkbox" style={{ zoom: 1.5 }} onChange={buyCheckboxChange} />
+                                    <input type="checkbox" checked={isBuy} style={{ zoom: 1.5 }} onChange={buyCheckboxChange} />
                                     <span className="flex-1 ml-[5px] text-[18px] font-bold">[필수] 구매 전 필수 동의사항</span>
                                     <FontAwesomeIcon className="w-[20px] h-[20px] text-[20px]" icon={faChevronDown} />
                                 </div>
                                 <div className="flex w-full mb-[10px]">
-                                    <input type="checkbox" style={{ zoom: 1.5 }} onChange={cancelCheckboxChange} />
+                                    <input type="checkbox" checked={isCancel} style={{ zoom: 1.5 }} onChange={cancelCheckboxChange} />
                                     <span className="ml-[5px] text-[18px] font-bold">[필수] 상품별 취소/반품 조건 안내</span>
                                 </div>
                                 <table className="w-full border">
@@ -370,6 +429,7 @@ export default function PaymentWindowComponent() {
                             </div>
                         </div>
                         <button onClick={onClickPayment} style={{ backgroundColor: EVENT_COLOR }} className="w-full py-[15px] border rounded-lg text-white text-[20px]">가격원 결제하기</button>
+                        {/* 주문 취소 테스트버튼  <button onClick={test} style={{ backgroundColor: EVENT_COLOR }} className="w-full py-[15px] border rounded-lg text-white text-[20px]">주문 취소</button> */}
                     </div>
                 </div>
             </div>
