@@ -11,6 +11,7 @@ import Link from 'next/link'
 
 
 interface Item {
+  c_id : number;
   item:{
     i_id: number;
     photo: string;
@@ -26,14 +27,23 @@ const MyCartComponent = () => {
 
   const { darkMode } = useDarkMode();
   
+  const [state, setState] = useState(false)
   const [cartArray, setCartArray] = useState<Item[]>([])
   const [allChecked, setAllChecked] = useState(true);
-  const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({});
-
+  const initialCheckedItems: Record<number, boolean> = {};
+  Object.keys(cartArray).forEach((index: any) => {
+    initialCheckedItems[index] = true;
+  });
+  const [checkedItems, setCheckedItems] = useState(initialCheckedItems);
   const checkedCount = Object.values(checkedItems).filter((value) => value).length;
+  const checkedCartItems = Object.keys(checkedItems)
+    .filter(key => checkedItems[parseInt(key)]) 
+    .map(key => cartArray[parseInt(key)]);
 
+  const isAllchecked = () => {
+    return Object.values(checkedItems).every((value) => value);
+  };
 
-  console.log(checkedItems)
   const handleCheckAllChange = () => {
     setAllChecked((prevAllChecked) => !prevAllChecked);
     setCheckedItems((prev) => {
@@ -62,6 +72,48 @@ const MyCartComponent = () => {
       })
       .then((response) => {
         setCartArray(response.data.data);
+        const newInitialCheckedItems: Record<number, boolean> = {};
+        response.data.data.forEach((_:any, index: number) => {
+          newInitialCheckedItems[index] = true;
+          
+        });
+        setCheckedItems(newInitialCheckedItems);
+      })
+      .catch((error) => {
+        console.error("API 호출 중 오류 발생:", error);
+      });
+  }
+
+  const deleteOneCartButton = (cartId: number) => {
+      axios
+        .post(`api/cart/delete`, {cartId} ,{
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        if (response.data.success) {
+          setState(!state)
+        }
+      })
+      .catch((error) => {
+        console.error("API 호출 중 오류 발생:", error);
+      });
+  }
+
+  const deleteChosenCartButton = (checkedCartItems: object) => {
+      axios
+        .post(`api/cart/delete_chosen`, {checkedCartItems} ,{
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        if (response.data.success) {
+          setState(!state)
+        }
       })
       .catch((error) => {
         console.error("API 호출 중 오류 발생:", error);
@@ -69,9 +121,19 @@ const MyCartComponent = () => {
   }
 
   useEffect(() => {
-    getCartData()
-    handleCheckAllChange();
-  },[])
+    const fetchData = async () => {
+      await getCartData();
+      handleCheckAllChange();
+    };
+
+    fetchData();
+
+    setAllChecked(isAllchecked());
+  }, [state]);
+
+  useEffect(()=>{
+    setAllChecked(isAllchecked());
+  }, [checkedItems])
 
 
   return (
@@ -87,7 +149,10 @@ const MyCartComponent = () => {
               <span>668,330</span>
               <span>원</span>
             </div>
-            <button className={`w-[110px] h-[50px] flex items-center border ${darkMode ? 'border-[#CFD5DB]' : 'border-[#CFD5DB]'} rounded-md justify-center text-[14px] font-semibold`}>
+            <button
+              className={`w-[110px] h-[50px] flex items-center border ${darkMode ? 'border-[#CFD5DB]' : 'border-[#CFD5DB]'} rounded-md justify-center text-[14px] font-semibold`}
+              onClick={()=>deleteChosenCartButton(checkedCartItems)}
+            >
               <span>선택 삭제</span>
               <span className='ml-[3px]'>(</span>
               <span>{checkedCount}</span>
@@ -175,7 +240,10 @@ const MyCartComponent = () => {
                   <span className='font-bold text-[17px]'>{(item.item.discount != 0) ? Math.floor(item.item.discount).toLocaleString(): Math.floor(item.item.price).toLocaleString()}<span>원</span></span>
                 </div>
                 <div className={`w-[10%] h-[50%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}`}>
-                  <button className='w-[80px] h-[50px] flex items-center border border-[#CFD5DB] rounded-md justify-center text-[14px] font-semibold'>
+                  <button
+                    className='w-[80px] h-[50px] flex items-center border border-[#CFD5DB] rounded-md justify-center text-[14px] font-semibold'
+                    onClick={()=>deleteOneCartButton(item.c_id)}
+                  >
                     <span>삭제</span>
                   </button>
                 </div>
