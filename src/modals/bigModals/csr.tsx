@@ -316,7 +316,7 @@ export const ProductInformationComponent = () => {
     </div>
   );
 
-}
+};
 
 export const DeliveryInformationComponent = () => {
   const { closeModal } = useModal();
@@ -427,8 +427,7 @@ export const DeliveryInformationComponent = () => {
     </div>
   );
 
-}
-
+};
 
 export const RefundInformationComponent = () => {
   const { closeModal } = useModal();
@@ -513,7 +512,7 @@ export const RefundInformationComponent = () => {
     </div>
   );
 
-}
+};
 
 export const CardInstallmentComponent = () => {
   const { closeModal } = useModal();
@@ -551,4 +550,4 @@ export const CardInstallmentComponent = () => {
     </div>
   );
 
-}
+};

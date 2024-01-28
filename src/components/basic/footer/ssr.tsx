@@ -1,13 +1,16 @@
-// SSR (Server Side Rendering)
-// use client 쓰지 마세요.
+// CSR (Client Side Rendering)
 // 주재훈 작성.
+'use client'
+
+import { useDarkMode } from '@/hooks/context/darkMode'
 
 export default function Footer() {
+  const {darkMode} = useDarkMode()
   return (
     <footer 
-      className='w-full h-[200px] text-[12px] flex flex-col items-start justify-center p-[30px]'
+      className={`w-full h-[200px] text-[12px] flex flex-col items-start justify-center p-[30px] ${darkMode ? 'bg-[#121212]' : 'bg-[#F7F8F9]'}`}
     >
-      <div>
+      <div className='w-[70%] mx-auto'>
         <p className='mb-[10px]'>상호명 : 오오티디코리아 | 오오티디메일 : cs@ootd.com | 전화번호 : 1522-1234 | 주소 : 06610 서울특별시 서초구 서청대로77길 42, 10층 (서청동)</p>
         <p>
           사이버몰 내 판매되는 상품 중에는 개별 판매자가 판매하는 마켓플레이스 상품이 포함되어 있습니다.

@@ -1,5 +1,6 @@
 import CategoryListComponent from "@/components/category/categoryList/csr";
 import CategoryMenuBarComponent from "@/components/category/categoryMenuBar/csr";
+import { GET_ITEM_LIKE } from '@/constants/endpoint';
 import axios from "axios";
 
 type Data = {
@@ -15,11 +16,12 @@ async function categoryPage(category: string, page: any) {
     })
     return {
         props: {
-          list: res.data,
+            list: res.data,
         },
         revalidate: 20,
-      };
+    };
 }
+
 
 export default async function CategoryMenuContainer({category, page, totalpage}:Data) {
     const categoryData = await categoryPage(category,page)

@@ -4,15 +4,19 @@
 'use client'
 
 import { EVENT_COLOR, STAR_COLOR } from "@/constants/color";
+import { GET_THIS_ITEM_LIKED, PRESS_LIKE_BUTTON } from '@/constants/endpoint';
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { faCaretDown, faCaretUp, faChevronDown, faChevronRight, faChevronUp, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from 'axios';
 import { RequestPayParams, RequestPayResponse } from "iamport-typings";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ItemOrderComponent(itemList: any) {
+
+    const [heartStates, setHeartStates] = useState(Boolean);
 
     const onClickPayment = () => {
         if (!window.IMP) return;
@@ -58,7 +62,48 @@ export default function ItemOrderComponent(itemList: any) {
         setIsSize(!isSize)
     }
 
+    const clickLikeButton = (itemId: number) => {
+        axios
+        .post(PRESS_LIKE_BUTTON, {itemId}, {
+            headers: {
+            "Content-Type": "application/json",
+            },
+            withCredentials: true,
+        })
+        .then((response) => {
+            setHeartStates(response.data)
+        })
+    }
 
+    const getIsLiked = (itemId: number) => {
+        axios
+        .post(GET_THIS_ITEM_LIKED, { itemId }, {
+            headers: {
+            "Content-Type": "application/json",
+            },
+            withCredentials: true,
+        })
+        .then((response) => {
+            setHeartStates(response.data.results)
+        })
+    }
+
+    const pressCartButton = (itemId: number) => {
+        axios
+        .post('/api/cart/press', { itemId }, {
+            headers: {
+            "Content-Type": "application/json",
+            },
+            withCredentials: true,
+        })
+        .then((response) => {
+            console.log(response.data.success)
+        })
+    }
+
+    useEffect(()=>{
+        getIsLiked(itemList.itemList.i_id)
+    })
 
     return (
         <section>
@@ -72,8 +117,11 @@ export default function ItemOrderComponent(itemList: any) {
                                 <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px] mt-[4px]" icon={faChevronRight} />
                             </button>
                             <div>
-                                <button className="w-[40px] h-[40px]">
-                                    <FontAwesomeIcon className="w-[28px] h-[28px]" icon={faHeart} />
+                                <button 
+                                    className="w-[40px] h-[40px]"
+                                    onClick={()=>clickLikeButton(itemList.itemList.i_id)}
+                                >
+                                    <FontAwesomeIcon className={`${heartStates? 'text-red-500' : ''} w-[28px] h-[28px]`}  icon={faHeart} />
                                 </button>
                                 <button className="w-[40px] h-[40px]">
                                     <FontAwesomeIcon className="w-[28px] h-[28px]" icon={faShareNodes} />
@@ -149,7 +197,12 @@ export default function ItemOrderComponent(itemList: any) {
                         </div>
                     </div>}
                     <div className="flex justify-between text-[16px] font-bold">
-                        <button className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded">장바구니</button>
+                        <button
+                            className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded"
+                            onClick={()=>pressCartButton(itemList.itemList.i_id)}
+                        >
+                            장바구니
+                        </button>
                         <button onClick={onClickPayment} className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded">구매하기</button>
                     </div>
                 </div>

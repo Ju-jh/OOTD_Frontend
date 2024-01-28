@@ -11,7 +11,7 @@ type Data = {
 
 export default function ProductRankingContainer ({ serverRenderedData }: Data) {
   return (
-    <section className='w-full h-[900px]  flex flex-col items-center justify-between p-[20px]'>
+    <section className='w-[70%] h-[900px] mx-auto flex flex-col items-center justify-between p-[20px]'>
       {serverRenderedData.map((item, index) => (
         <div key={index} className='MiniContainer w-full h-[250px]'>
           <h1 className='font-bold text-[18px]'>{item.desc}</h1>
