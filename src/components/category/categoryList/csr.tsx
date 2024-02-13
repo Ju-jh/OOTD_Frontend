@@ -81,13 +81,6 @@ export default function CategoryListComponent({ categoryname, category, page, to
         })
     }
 
-    // const pushButtonHal = async () => {
-    //     await category.map((item, index) => {
-    //         item.
-    //     })
-    //     setItems()
-    // }
-
     useEffect(() => {
         const iIds = (category.map((item) => item.i_id))
         getItemLike(iIds)
