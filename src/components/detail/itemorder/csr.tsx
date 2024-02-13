@@ -14,6 +14,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+interface Item {
+    c_id: number;
+    item: {
+        i_id: number;
+        photo: string;
+        category: string;
+        brand: string;
+        title: string;
+        discount: number;
+        price: number;
+    }
+}
+
 export default function ItemOrderComponent(itemList: any) {
 
     const [heartStates, setHeartStates] = useState(Boolean);
@@ -21,6 +34,7 @@ export default function ItemOrderComponent(itemList: any) {
     const [isSizeBar, setIsSizeBar] = useState(false)
     const [isSize, setIsSize] = useState("사이즈를 선택해주세요")
     const itemDetail = [isSize, [item]]
+    const [isCartId, setIsCartId] = useState<Number[]>()
     const discount = Math.round(parseInt(item.discount) / parseInt(item.price) * 100)
 
     const checkBtn = () => {
@@ -173,14 +187,20 @@ export default function ItemOrderComponent(itemList: any) {
                         >
                             장바구니
                         </button>
-                        <button className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded">
-                            <Link href={{
-                                pathname: "/payment",
-                                query: { item: JSON.stringify(itemDetail) },
-                            }}>
+                        <Link
+                            href={{
+                                pathname: '/payment',
+                                query: {
+                                    carts: JSON.stringify(["item",itemList.itemList.i_id]),
+                                },
+                            }}
+                            className='text-center w-[48%]'
+                        >
+                            <button onClick={() => pressCartButton(itemList.itemList.i_id, isSize)} className="h-[52px] min-w-[200px] w-[100%] border border-1 border-black rounded">
                                 구매하기
-                            </Link>
-                        </button>                    </div>
+                            </button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </section>
