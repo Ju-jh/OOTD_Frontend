@@ -16,7 +16,7 @@ export const MyBasicInfoComponent = () => {
   const { darkMode } = useDarkMode()
   const { photo, name, setIsLogined } = useAuth()
   const { openModal } = useModal()
-  const [ point, setPoint] =useState('3,000')
+  const [ point, setPoint] =useState('1,000')
 
   const clickLogoutBtn = async () => {
       await axios
@@ -27,12 +27,14 @@ export const MyBasicInfoComponent = () => {
         withCredentials: true,
       })
       .then((response) => {
-          if (response) {
+        if (response) {
+            console.log('afsdf')
             setIsLogined(false)
             window.location.href = Home_Link;
           }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error)
       });
   }
 

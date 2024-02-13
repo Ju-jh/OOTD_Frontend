@@ -58,9 +58,9 @@ export default function ItemOrderComponent(itemList: any) {
             })
     }
 
-    const pressCartButton = (itemId: number) => {
+    const pressCartButton = (itemId: number, itemSize: string,) => {
         axios
-            .post('/api/cart/press', { itemId }, {
+            .post('/api/cart/press', { itemId, itemSize }, {
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -169,7 +169,7 @@ export default function ItemOrderComponent(itemList: any) {
                     <div className="flex justify-between text-[16px] font-bold">
                         <button
                             className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded"
-                            onClick={() => pressCartButton(itemList.itemList.i_id)}
+                            onClick={() => pressCartButton(itemList.itemList.i_id, isSize)}
                         >
                             장바구니
                         </button>
