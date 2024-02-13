@@ -9,10 +9,9 @@ import { useDarkMode } from '@/hooks/context/darkMode';
 import axios from 'axios'
 import Link from 'next/link'
 
-
 interface Item {
-  c_id : number;
-  item:{
+  c_id: number;
+  item: {
     i_id: number;
     photo: string;
     category: string;
@@ -26,7 +25,7 @@ interface Item {
 const MyCartComponent = () => {
 
   const { darkMode } = useDarkMode();
-  
+
   const [state, setState] = useState(false)
   const [cartArray, setCartArray] = useState<Item[]>([])
   const [allChecked, setAllChecked] = useState(true);
@@ -37,8 +36,11 @@ const MyCartComponent = () => {
   const [checkedItems, setCheckedItems] = useState(initialCheckedItems);
   const checkedCount = Object.values(checkedItems).filter((value) => value).length;
   const checkedCartItems = Object.keys(checkedItems)
-    .filter(key => checkedItems[parseInt(key)]) 
+    .filter(key => checkedItems[parseInt(key)])
     .map(key => cartArray[parseInt(key)]);
+
+  // 기웅이가 추가한 코드 ()
+  const [isCartId, setIsCartId] = useState<Number[]>([])
 
   const isAllchecked = () => {
     return Object.values(checkedItems).every((value) => value);
@@ -56,14 +58,14 @@ const MyCartComponent = () => {
   };
 
   const handleCheckboxChange = (index: number) => {
-      setCheckedItems((prev) => ({
-          ...prev,
-          [index]: !prev[index],
-      }));
+    setCheckedItems((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
   };
 
   const getCartData = () => {
-      axios
+    axios
       .get(`api/cart/view`, {
         headers: {
           "Content-Type": "application/json",
@@ -72,10 +74,15 @@ const MyCartComponent = () => {
       })
       .then((response) => {
         setCartArray(response.data.data);
+
+        // 기웅이가 추가한 코드 (c_id로만 이루어진 배열생성)
+        const car = response.data.data.map((item: { c_id: any }) => [item.c_id]).flat();
+        setIsCartId(car)
+
         const newInitialCheckedItems: Record<number, boolean> = {};
-        response.data.data.forEach((_:any, index: number) => {
+        response.data.data.forEach((_: any, index: number) => {
           newInitialCheckedItems[index] = true;
-          
+
         });
         setCheckedItems(newInitialCheckedItems);
       })
@@ -83,10 +90,10 @@ const MyCartComponent = () => {
         console.error("API 호출 중 오류 발생:", error);
       });
   }
-
+  
   const deleteOneCartButton = (cartId: number) => {
-      axios
-        .post(`api/cart/delete`, {cartId} ,{
+    axios
+      .post(`api/cart/delete`, { cartId }, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -103,8 +110,8 @@ const MyCartComponent = () => {
   }
 
   const deleteChosenCartButton = (checkedCartItems: object) => {
-      axios
-        .post(`api/cart/delete_chosen`, {checkedCartItems} ,{
+    axios
+      .post(`api/cart/delete_chosen`, { checkedCartItems }, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -131,7 +138,7 @@ const MyCartComponent = () => {
     setAllChecked(isAllchecked());
   }, [state]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setAllChecked(isAllchecked());
   }, [checkedItems])
 
@@ -151,7 +158,7 @@ const MyCartComponent = () => {
             </div>
             <button
               className={`w-[110px] h-[50px] flex items-center border ${darkMode ? 'border-[#CFD5DB]' : 'border-[#CFD5DB]'} rounded-md justify-center text-[14px] font-semibold`}
-              onClick={()=>deleteChosenCartButton(checkedCartItems)}
+              onClick={() => deleteChosenCartButton(checkedCartItems)}
             >
               <span>선택 삭제</span>
               <span className='ml-[3px]'>(</span>
@@ -196,8 +203,8 @@ const MyCartComponent = () => {
                 </div>
                 <div className={`w-[40%] h-[100%] flex items-center justify-between border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}  p-[30px]`}>
                   <div className='w-[90px] h-[100%] mr-[20px]'>
-                    <Link  key={index} href={`category/${item.item.category}/item/${item.item.i_id}` }>
-                      <Image src={item.item.photo} alt="itemImage" width="90" height="90"  style={{ objectFit: 'cover', width: '100%', height: '100%'}}/>
+                    <Link key={index} href={`category/${item.item.category}/item/${item.item.i_id}`}>
+                      <Image src={item.item.photo} alt="itemImage" width="90" height="90" style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
                     </Link>
                   </div>
                   <div className='w-[240px] h-[100%] flex flex-col items-start justify-center'>
@@ -214,7 +221,7 @@ const MyCartComponent = () => {
                 <div className={`w-[10%] h-[40%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'} text-[14px]`}>
                   <span className=''>최대</span>
                   <span style={{ color: EVENT_COLOR }}>
-                    {(item.item.discount != 0) ? Math.floor(item.item.discount * 0.05).toLocaleString(): Math.floor(item.item.price * 0.05).toLocaleString()}<span>원</span>
+                    {(item.item.discount != 0) ? Math.floor(item.item.discount * 0.05).toLocaleString() : Math.floor(item.item.price * 0.05).toLocaleString()}<span>원</span>
                   </span>
                 </div>
                 <div className={`w-[10%] h-[80%] flex flex-col items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'} text-[15px]`}>
@@ -226,23 +233,23 @@ const MyCartComponent = () => {
                     )}
                   </span>
                   <span className=''>
-                    {(item.item.discount != 0) ? Math.floor(item.item.discount).toLocaleString(): Math.floor(item.item.price).toLocaleString()}<span>원</span>
+                    {(item.item.discount != 0) ? Math.floor(item.item.discount).toLocaleString() : Math.floor(item.item.price).toLocaleString()}<span>원</span>
                   </span>
                   <span style={{ color: EVENT_COLOR }}>
                     {item.item.discount != 0 && (
                       <span className=''>
-                        -{(Math.floor(item.item.price)-Math.floor(item.item.discount)).toLocaleString()}<span>원</span>
+                        -{(Math.floor(item.item.price) - Math.floor(item.item.discount)).toLocaleString()}<span>원</span>
                       </span>
                     )}
                   </span>
                 </div>
                 <div className={`w-[15%] h-[50%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}`}>
-                  <span className='font-bold text-[17px]'>{(item.item.discount != 0) ? Math.floor(item.item.discount).toLocaleString(): Math.floor(item.item.price).toLocaleString()}<span>원</span></span>
+                  <span className='font-bold text-[17px]'>{(item.item.discount != 0) ? Math.floor(item.item.discount).toLocaleString() : Math.floor(item.item.price).toLocaleString()}<span>원</span></span>
                 </div>
                 <div className={`w-[10%] h-[50%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'}`}>
                   <button
                     className='w-[80px] h-[50px] flex items-center border border-[#CFD5DB] rounded-md justify-center text-[14px] font-semibold'
-                    onClick={()=>deleteOneCartButton(item.c_id)}
+                    onClick={() => deleteOneCartButton(item.c_id)}
                   >
                     <span>삭제</span>
                   </button>
@@ -301,10 +308,22 @@ const MyCartComponent = () => {
               </div>
             </div>
           </div>
-          <button className='w-[320px] h-[55px] bg-[#111719] text-white font-bold mx-auto rounded-md'>구매하기</button>
+          {/* 기웅이가 추가한 코드 (url를 이용한 전달이외에 방법을 찾지못해서 
+            as를 추가해서 url를 /payment로 고정을 시도했지만 /payment 페이지에서 값을 가져오지못해 주석처리) */}
+          <Link
+            href={{
+              pathname: '/payment',
+              query: {
+                carts: JSON.stringify(["cart",isCartId]),
+              },
+            }}
+            className='text-center'
+          >
+            <button className='w-[320px] h-[55px] bg-[#111719] text-white font-bold mx-auto rounded-md'>구매하기</button>
+          </Link>
         </div>
-      </section>
-    </div>
+      </section >
+    </div >
   )
 }
 

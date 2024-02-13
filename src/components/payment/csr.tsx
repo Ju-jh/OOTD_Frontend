@@ -10,14 +10,25 @@ import { RequestPayParams, RequestPayResponse } from "iamport-typings";
 import { SetStateAction, useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'next/navigation'
+
+interface Item {
+    c_id: number;
+    item: {
+        i_id: number;
+        photo: string;
+        category: string;
+        brand: string;
+        title: string;
+        discount: number;
+        price: number;
+    }
+}
 
 export default function PaymentWindowComponent() {
-
-    const params = useSearchParams();
-    const item = params.get('item');
-    const items = JSON.parse(item!)
-    console.log(items);
+    const searchParams = useSearchParams()
+    const carts = searchParams.get("carts")
+    const [isCartArray, setIsCartArray] = useState<Item[]>([])
 
     // 바로구매 누를시 들어오는 데이터값
     const [isPG, setIsPG] = useState("")
@@ -132,6 +143,7 @@ export default function PaymentWindowComponent() {
     }
 
     const onClickPayment = () => {
+        order(true)
         if (isCancel && isBuy) {
             if (!window.IMP) return;
             /* 1. 가맹점 식별하기 */
@@ -172,16 +184,55 @@ export default function PaymentWindowComponent() {
     }
 
     useEffect(() => {
-        const total = items[1].map((item: any) => parseInt(item.price) - parseInt(item.discount))
-            .reduce((total: any, price: any) => total + price, 0);
-        const totalPrice = items[1].map((item: any) => parseInt(item.price) + parseInt(item.price))
-            .reduce((total: any, price: any) => total + price, 0);
-        const totalDiscount = items[1].map((item: any) => parseInt(item.discount) + parseInt(item.discount))
-            .reduce((total: any, price: any) => total + price, 0);
-        setIsTotal(total);
-        setIsTotalPrice(totalPrice);
-        setIsTotalDiscount(totalDiscount);
-    }, [items]);
+        const cartArray = JSON.parse(carts!)
+        if (cartArray[0] == "cart") {
+            axios.get("/api/order/carts", {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                params: {
+                    cart: cartArray[1]
+                },
+                withCredentials: true,
+            })
+                .then((response) => {
+                    setIsCartArray(response.data)
+                    const total = (response.data).map((item: any) => parseInt(item.item.price) - parseInt(item.item.discount))
+                        .reduce((total: any, price: any) => total + price, 0);
+                    const totalPrice = (response.data).map((item: any) => parseInt(item.item.price) + parseInt(item.item.price))
+                        .reduce((total: any, price: any) => total + price, 0);
+                    const totalDiscount = (response.data).map((item: any) => parseInt(item.item.discount) + parseInt(item.item.discount))
+                        .reduce((total: any, price: any) => total + price, 0);
+                    setIsTotal(total);
+                    setIsTotalPrice(totalPrice);
+                    setIsTotalDiscount(totalDiscount);
+                })
+        } else {
+            axios.get("/api/order/item", {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                params: {
+                    cart: cartArray[1]
+                },
+                withCredentials: true,
+            })
+                .then((response) => {
+                    console.log(response.data);
+                    setIsCartArray(response.data)
+                    const total = (response.data).map((item: any) => parseInt(item.item.price) - parseInt(item.item.discount))
+                        .reduce((total: any, price: any) => total + price, 0);
+                    const totalPrice = (response.data).map((item: any) => parseInt(item.item.price) + parseInt(item.item.price))
+                        .reduce((total: any, price: any) => total + price, 0);
+                    const totalDiscount = (response.data).map((item: any) => parseInt(item.item.discount) + parseInt(item.item.discount))
+                        .reduce((total: any, price: any) => total + price, 0);
+                    setIsTotal(total);
+                    setIsTotalPrice(totalPrice);
+                    setIsTotalDiscount(totalDiscount);
+                })
+        }
+
+    }, [carts])
 
     return (
         <div>
@@ -238,20 +289,21 @@ export default function PaymentWindowComponent() {
                     <div className="py-[5%] px-[10%] mb-[15px] bg-white">
                         <p className="font-bold text-[25px] mb-[15px]">한국 배송 상품</p>
                         <div className="max-h-[600px] overflow-y-auto scrollbar-hide">
-                            {items[1].map((item: any, index: number) => {
+                            {isCartArray.map((item: any, index: number) => {
                                 return (
                                     <div key={index} className="mb-[20px]">
                                         <div className="mb-[20px]">
                                             <div className="flex w-full h-[200px]">
                                                 <div className="w-[200px] h-[200px]">
-                                                    <Image src={item.photo} alt={""} style={{ width: '200px', height: '200px' }} width={200} height={200} />
+                                                    <Image src={item.item.photo} alt={""} style={{ width: '200px', height: '200px' }} width={200} height={200} />
                                                 </div>
                                                 <div className="flex flex-col flex-1 text-[20px] pl-[5px]">
-                                                    <p className="text-[20px] font-bold">{item.brand}</p>
-                                                    <p className="my-[7px]">{item.title}</p>
-                                                    <p className="mb-[7px]">{items[0]}</p>
+                                                    <p className="text-[20px] font-bold">{item.item.brand}</p>
+                                                    <p className="my-[7px]">{item.item.title}</p>
+                                                    {/* 여기에 사이즈가 들어감 cart에 사이즈 없음
+                                                     <p className="mb-[7px]">{items[0]}</p> */}
                                                     <div className="flex items-center h-full text-[20px] font-bold">
-                                                        <p>{(parseInt(item.price) - parseInt(item.discount)).toLocaleString()}원</p>
+                                                        <p>{(parseInt(item.item.price) - parseInt(item.item.discount)).toLocaleString()}원</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -262,7 +314,7 @@ export default function PaymentWindowComponent() {
                             })}
                         </div>
                         <div className="flex justify-between text-[25px] font-bold py-[20px]">
-                            <p>총 <span style={{ color: EVENT_COLOR }}>{items[1].length}</span>개</p>
+                            <p>총 <span style={{ color: EVENT_COLOR }}>{isCartArray.length}</span>개</p>
                             <p>
                                 {isTotal.toLocaleString()}원
                             </p>
@@ -352,7 +404,7 @@ export default function PaymentWindowComponent() {
                             <tbody>
                                 <tr>
                                     <td className="min-w-[120px] p-[10px] text-[20px]">주문 상품수</td>
-                                    <td className="text-right font-bold">{items[1].length}개</td>
+                                    {/* <td className="text-right font-bold">{items[1].length}개</td> */}
                                 </tr>
                                 <tr>
                                     <td className="min-w-[120px] p-[10px] text-[20px]">총 상품 가격</td>
