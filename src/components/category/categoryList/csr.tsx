@@ -84,7 +84,6 @@ export default function CategoryListComponent({ categoryname, category, page, to
     useEffect(() => {
         const iIds = (category.map((item) => item.i_id))
         getItemLike(iIds)
-            console.log(category)
 
     },[category])
 

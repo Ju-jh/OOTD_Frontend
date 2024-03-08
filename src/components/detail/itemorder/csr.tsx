@@ -4,16 +4,15 @@
 'use client'
 
 import { EVENT_COLOR, STAR_COLOR } from "@/constants/color";
+import { TOPCLOTHES, BOTTOMCLOTHES, SHOESCLOTHES, FREECLOTHES } from "@/constants/array"
 import { GET_THIS_ITEM_LIKED, PRESS_LIKE_BUTTON } from '@/constants/endpoint';
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
-import { faCaretDown, faCaretUp, faChevronDown, faChevronRight, faChevronUp, faShareNodes } from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown, faCaretUp, faChevronRight, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from 'axios';
-import { RequestPayParams, RequestPayResponse } from "iamport-typings";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
 interface Item {
     c_id: number;
     item: {
@@ -31,6 +30,7 @@ export default function ItemOrderComponent(itemList: any) {
 
     const [heartStates, setHeartStates] = useState(Boolean);
     const item = itemList.itemList
+    console.log(item.category)
     const [isSizeBar, setIsSizeBar] = useState(false)
     const [isSize, setIsSize] = useState("사이즈를 선택해주세요")
     const itemDetail = [isSize, [item]]
@@ -81,13 +81,12 @@ export default function ItemOrderComponent(itemList: any) {
                 withCredentials: true,
             })
             .then((response) => {
-                console.log(response.data.success)
             })
     }
 
     useEffect(() => {
         getIsLiked(itemList.itemList.i_id)
-    })
+    },[])
 
     return (
         <section>
@@ -161,11 +160,13 @@ export default function ItemOrderComponent(itemList: any) {
                             <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px] mt-[4px]" icon={faChevronRight} />
                         </button>
                     </div>
-                    {item.category == "watch" ? null : <div className="mb-[10px]">
+                    <div className="mb-[10px]">
                         <div className="flex text-center mb-[10px]">
                             <span className="text-[16px]">사이즈 가이드</span>
                             <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px] mt-[4px]" icon={faChevronRight} />
                         </div>
+                        {
+                            TOPCLOTHES.includes(item.category) ?
                         <div className="relative w-full">
                             <div onClick={checkBtn} className={`flex justify-between p-[12px] border ${isSizeBar ? "border-b-0" : "border-1"} border-black`}>
                                 <span className="text-[16px]">{isSize}</span>
@@ -179,7 +180,54 @@ export default function ItemOrderComponent(itemList: any) {
                                 <div onClick={() => sizeBtn("XXL")} className="p-[12px]">XXL</div>
                             </div>
                         </div>
-                    </div>}
+                                :
+                                BOTTOMCLOTHES.includes(item.category) ?  
+                        <div className="relative w-full">
+                            <div onClick={checkBtn} className={`flex justify-between p-[12px] border ${isSizeBar ? "border-b-0" : "border-1"} border-black`}>
+                                <span className="text-[16px]">{isSize}</span>
+                                {isSizeBar ? <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretUp} /> : <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretDown} />}
+                            </div>
+                            <div className={`${isSizeBar ? "" : "hidden"} absolute w-full bg-gray-200 border border-black text-black z-1`}>
+                                <div onClick={() => sizeBtn("26")} className="p-[12px]">26</div>
+                                <div onClick={() => sizeBtn("28")} className="p-[12px]">28</div>
+                                <div onClick={() => sizeBtn("30")} className="p-[12px]">30</div>
+                                <div onClick={() => sizeBtn("32")} className="p-[12px]">32</div>
+                                <div onClick={() => sizeBtn("34")} className="p-[12px]">34</div>
+                            </div>
+                        </div>    
+                                :
+                                SHOESCLOTHES.includes(item.category) ?  
+                        <div className="relative w-full">
+                            <div onClick={checkBtn} className={`flex justify-between p-[12px] border ${isSizeBar ? "border-b-0" : "border-1"} border-black`}>
+                                <span className="text-[16px]">{isSize}</span>
+                                {isSizeBar ? <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretUp} /> : <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretDown} />}
+                            </div>
+                            <div className={`${isSizeBar ? "" : "hidden"} absolute w-full bg-gray-200 border border-black text-black z-1`}>
+                                <div onClick={() => sizeBtn("220")} className="p-[12px]">220</div>
+                                <div onClick={() => sizeBtn("230")} className="p-[12px]">230</div>
+                                <div onClick={() => sizeBtn("240")} className="p-[12px]">240</div>
+                                <div onClick={() => sizeBtn("250")} className="p-[12px]">250</div>
+                                <div onClick={() => sizeBtn("260")} className="p-[12px]">260</div>
+                                <div onClick={() => sizeBtn("270")} className="p-[12px]">270</div>
+                                <div onClick={() => sizeBtn("280")} className="p-[12px]">280</div>
+                                <div onClick={() => sizeBtn("290")} className="p-[12px]">290</div>
+                                <div onClick={() => sizeBtn("300")} className="p-[12px]">300</div>
+                            </div>
+                        </div>    
+                                :
+                                FREECLOTHES.includes(item.category) ?  
+                        <div className="relative w-full">
+                            <div onClick={checkBtn} className={`flex justify-between p-[12px] border ${isSizeBar ? "border-b-0" : "border-1"} border-black`}>
+                                <span className="text-[16px]">{isSize}</span>
+                                {isSizeBar ? <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretUp} /> : <FontAwesomeIcon className="h-[16px] w-[16px] text-[16px]" icon={faCaretDown} />}
+                            </div>
+                            <div className={`${isSizeBar ? "" : "hidden"} absolute w-full bg-gray-200 border border-black text-black z-1`}>
+                                <div onClick={() => sizeBtn("free")} className="p-[12px]">Free</div>
+                            </div>
+                        </div>    
+                            : null
+                        }
+                    </div>
                     <div className="flex justify-between text-[16px] font-bold">
                         <button
                             className="h-[52px] min-w-[200px] w-[48%] border border-1 border-black rounded"

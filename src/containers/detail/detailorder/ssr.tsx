@@ -12,9 +12,7 @@ async function itemData(item: string) {
 }
 export default async function DetailOrderContainer(props: any) {
     const item = props.item
-    const itemList = await itemData(item)
-    console.log(itemList);
-    
+    const itemList = await itemData(item)    
 
     return (
         <section className='h-[700px] pt-[20px] mx-[15%]'>

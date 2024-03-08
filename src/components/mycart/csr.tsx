@@ -1,6 +1,8 @@
 'use client'
 
 import { EVENT_COLOR } from '@/constants/color'
+import { TOPCLOTHES, BOTTOMCLOTHES, SHOESCLOTHES, FREECLOTHES } from "@/constants/array";
+
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
@@ -20,6 +22,8 @@ interface Item {
     discount: number;
     price: number;
   }
+  quantity: number;
+  size: string;
 }
 
 const MyCartComponent = () => {
@@ -30,6 +34,7 @@ const MyCartComponent = () => {
   const [cartArray, setCartArray] = useState<Item[]>([])
   const [allChecked, setAllChecked] = useState(true);
   const initialCheckedItems: Record<number, boolean> = {};
+  console.log(cartArray)
   Object.keys(cartArray).forEach((index: any) => {
     initialCheckedItems[index] = true;
   });
@@ -73,7 +78,8 @@ const MyCartComponent = () => {
         withCredentials: true,
       })
       .then((response) => {
-        setCartArray(response.data.data);
+        const sortedCartArray = response.data.data.sort((a: { createdAt: string | number | Date }, b: { createdAt: string | number | Date }) => (new Date(a.createdAt) as any) - (new Date(b.createdAt) as any));
+        setCartArray(sortedCartArray);
 
         // 기웅이가 추가한 코드 (c_id로만 이루어진 배열생성)
         const car = response.data.data.map((item: { c_id: any }) => [item.c_id]).flat();
@@ -127,14 +133,27 @@ const MyCartComponent = () => {
       });
   }
 
+  const pressChangeSizeCartButton = (cartId: number, itemSize: string,) => {
+      axios
+      .post('/api/cart/change_size', { cartId, itemSize }, {
+          headers: {
+              "Content-Type": "application/json",
+          },
+          withCredentials: true,
+      })
+      .then((response) => {
+        if (response.data.success) {
+          setState(!state)
+        }
+      })
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       await getCartData();
       handleCheckAllChange();
     };
-
     fetchData();
-
     setAllChecked(isAllchecked());
   }, [state]);
 
@@ -211,8 +230,81 @@ const MyCartComponent = () => {
                     <span className='font-bold'>{item.item.title}</span>
                     <span>{item.item.brand}</span>
                   </div>
-                  <div className='w-[260px] h-[100%] bg-red-500'>
-
+                  <div className='w-[260px] h-[80%] border border-[#dde0e3] rounded-md flex items-center justify-between p-[10px]'>
+                    {
+                      TOPCLOTHES.includes(item.item.category) ?
+                        <div
+                          className={`w-[50%] h-full flex items-center justify-center border-r  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                          <label htmlFor={`${index}`}></label>
+                          <select 
+                            value={item.size}  
+                            onChange={(e) => pressChangeSizeCartButton(item.c_id, e.target.value)} 
+                            name="size" 
+                            id={`${index}`} 
+                            style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }} defaultValue={item.size}>
+                                <option value="S" className="text-black">S</option>
+                                <option value="M" className="text-black">M</option>
+                                <option value="L" className="text-black">L</option>
+                                <option value="XL" className="text-black">XL</option>
+                                <option value="XXL" className="text-black">XXL</option>
+                          </select>
+                          </div>
+                        :
+                      BOTTOMCLOTHES.includes(item.item.category) ?
+                        <div
+                          className={`w-[50%] h-full flex items-center justify-center border-r  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                          <label htmlFor={`${index}`}></label>
+                          <select 
+                            value={item.size}  
+                            onChange={(e) => pressChangeSizeCartButton(item.c_id, e.target.value)} 
+                            name="size" 
+                            id={`${index}`} 
+                            style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }} defaultValue={item.size}>
+                                <option value="26" className="text-black">26</option>
+                                <option value="28" className="text-black">28</option>
+                                <option value="30" className="text-black">30</option>
+                                <option value="32" className="text-black">32</option>
+                                <option value="34" className="text-black">34</option>
+                          </select>
+                        </div>
+                        :
+                      SHOESCLOTHES.includes(item.item.category) ?
+                        <div
+                          className={`w-[50%] h-full flex items-center justify-center border-r  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                          <label htmlFor={`${index}`}></label>
+                          <select 
+                            value={item.size}  
+                            onChange={(e) => pressChangeSizeCartButton(item.c_id, e.target.value)} 
+                            name="size" 
+                            id={`${index}`} 
+                            style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }} defaultValue={item.size}>
+                                <option value="220" className="text-black">220</option>
+                                <option value="230" className="text-black">230</option>
+                                <option value="240" className="text-black">240</option>
+                                <option value="250" className="text-black">250</option>
+                                <option value="260" className="text-black">260</option>
+                                <option value="270" className="text-black">270</option>
+                                <option value="280" className="text-black">280</option>
+                                <option value="290" className="text-black">290</option>
+                                <option value="300" className="text-black">300</option>
+                          </select>
+                        </div>
+                        :
+                      FREECLOTHES.includes(item.item.category) ?
+                        <div
+                          className={`w-[50%] h-full flex items-center justify-center border-r ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                          {item.size}
+                        </div>
+                        :
+                        null
+                    }
+                    <div className={`w-[50%] h-full flex items-center justify-center hover:cursor-pointer hover:rounded-md ${darkMode ? '': 'hover:bg-[#F7F8F9]'}`}>
+                      {item.quantity} EA
+                    </div>
                   </div>
                 </div>
                 <div className={`w-[10%] h-[40%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'} text-[14px]`}>
