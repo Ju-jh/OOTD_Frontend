@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [email, setEmail] = useState('');
   const [photo, setPhoto] = useState('/photo.png');
   const [name, setName] = useState('');
-  const [loginPlatform, setLoginPlatform] = useState('')
+  const [loginPlatform, setLoginPlatform] = useState('');
 
   useEffect(() => {
     axios
@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, [isLogined, photo]);
 
   return (
-    <AuthContext.Provider value={{ isLogined, setIsLogined, email, photo, name, loginPlatform }}>
+    <AuthContext.Provider value={{ isLogined, setIsLogined, email, photo, name, loginPlatform}}>
       {children}
     </AuthContext.Provider>
   );
