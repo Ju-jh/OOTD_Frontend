@@ -22,6 +22,11 @@ const nextConfig = {
         port: '',
       },
       {
+        protocol: 'http',
+        hostname: 't1.kakaocdn.net',
+        port: '',
+      },
+      {
         protocol: 'https',
         hostname: 'image.msscdn.net',
         port: '',
