@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: false,
   async rewrites() {
     return [
       {
@@ -18,6 +19,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
+        port: '',
+      },
+      {
+        protocol: 'http',
+        hostname: 't1.kakaocdn.net',
         port: '',
       },
       {

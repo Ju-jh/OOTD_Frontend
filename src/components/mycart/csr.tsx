@@ -1,10 +1,11 @@
 'use client'
 
 import { EVENT_COLOR } from '@/constants/color'
+import { TOPCLOTHES, BOTTOMCLOTHES, SHOESCLOTHES, FREECLOTHES } from "@/constants/array";
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDarkMode } from '@/hooks/context/darkMode';
 import axios from 'axios'
 import Link from 'next/link'
@@ -20,19 +21,26 @@ interface Item {
     discount: number;
     price: number;
   }
+  quantity: number;
+  size: string;
 }
 
 const MyCartComponent = () => {
 
   const { darkMode } = useDarkMode();
-
   const [state, setState] = useState(false)
+
   const [cartArray, setCartArray] = useState<Item[]>([])
   const [allChecked, setAllChecked] = useState(true);
   const initialCheckedItems: Record<number, boolean> = {};
   Object.keys(cartArray).forEach((index: any) => {
     initialCheckedItems[index] = true;
   });
+
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
+
   const [checkedItems, setCheckedItems] = useState(initialCheckedItems);
   const checkedCount = Object.values(checkedItems).filter((value) => value).length;
   const checkedCartItems = Object.keys(checkedItems)
@@ -73,7 +81,8 @@ const MyCartComponent = () => {
         withCredentials: true,
       })
       .then((response) => {
-        setCartArray(response.data.data);
+        const sortedCartArray = response.data.data.sort((a: { createdAt: string | number | Date }, b: { createdAt: string | number | Date }) => (new Date(a.createdAt) as any) - (new Date(b.createdAt) as any));
+        setCartArray(sortedCartArray);
 
         // 기웅이가 추가한 코드 (c_id로만 이루어진 배열생성)
         const car = response.data.data.map((item: { c_id: any }) => [item.c_id]).flat();
@@ -87,7 +96,7 @@ const MyCartComponent = () => {
         setCheckedItems(newInitialCheckedItems);
       })
       .catch((error) => {
-        console.error("API 호출 중 오류 발생:", error);
+        console.error("getCartData API 호출 중 오류 발생:", error, error.errors);
       });
   }
   
@@ -105,7 +114,7 @@ const MyCartComponent = () => {
         }
       })
       .catch((error) => {
-        console.error("API 호출 중 오류 발생:", error);
+        console.error("deleteOneCartButton API 호출 중 오류 발생:", error);
       });
   }
 
@@ -123,24 +132,81 @@ const MyCartComponent = () => {
         }
       })
       .catch((error) => {
-        console.error("API 호출 중 오류 발생:", error);
+        console.error("deleteChosenCartButton API 호출 중 오류 발생:", error);
       });
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await getCartData();
-      handleCheckAllChange();
-    };
+  const pressChangeSizeCartButton = (cartId: number, itemSize: string,) => {
+      axios
+      .post('/api/cart/change_size', { cartId, itemSize }, {
+          headers: {
+              "Content-Type": "application/json",
+          },
+          withCredentials: true,
+      })
+      .then((response) => {
+        if (response.data.success) {
+          setState(!state)
+        }
+      })
+      .catch((error) => {
+        console.error("pressChangeSizeCartButton API 호출 중 오류 발생:", error);
+      });
+  }
 
-    fetchData();
+  const pressChangeQuantityCartButton = (cartId: number, itemQuantity: string,) => {
+      axios
+      .post('/api/cart/change_quantity', { cartId, itemQuantity }, {
+          headers: {
+              "Content-Type": "application/json",
+          },
+          withCredentials: true,
+      })
+      .then((response) => {
+        if (response.data.success) {
+          setState(!state)
+        }
+      })
+      .catch((error) => {
+        console.error("pressChangeQuantityCartButton API 호출 중 오류 발생:", error);
+      });
+  }
 
-    setAllChecked(isAllchecked());
-  }, [state]);
-
-  useEffect(() => {
-    setAllChecked(isAllchecked());
+  const countTotalPriceData = () => {
+    let totalQuantity = 0;
+    let totalPrice = 0;
+    let totalDiscount = 0;
+    checkedCartItems.forEach((item, _) => {
+      totalQuantity += item.quantity;
+      totalPrice += item.item.price * item.quantity;
+      if (item.item.discount == 0.00) {
+        totalDiscount += item.item.price * item.quantity;
+      } else {
+        totalDiscount += item.item.discount * item.quantity;
+      }
+    })
+    setTotalQuantity(totalQuantity)
+    setTotalPrice(totalPrice)
+    setTotalDiscount(totalDiscount)
+  }
+  
+  const detectCheckedAll = useMemo(() => {
+    countTotalPriceData();
   }, [checkedItems])
+  
+
+  useEffect(() => {
+    getCartData();
+    countTotalPriceData();
+    console.log('useEffect1 호출...')
+  }, [state])
+  
+  useEffect(() => {
+    handleCheckAllChange();
+    setAllChecked(isAllchecked());
+    console.log('useEffect2 호출...')
+  }, []);  
+  
 
 
   return (
@@ -153,7 +219,7 @@ const MyCartComponent = () => {
               <span className='mr-[4px]'>총</span>
               <span className='font-bold' style={{ color: EVENT_COLOR }}>{checkedCount}</span>
               <span className='font-bold' style={{ color: EVENT_COLOR }}>개 : </span>
-              <span>668,330</span>
+              <span>{totalDiscount}</span>
               <span>원</span>
             </div>
             <button
@@ -211,8 +277,91 @@ const MyCartComponent = () => {
                     <span className='font-bold'>{item.item.title}</span>
                     <span>{item.item.brand}</span>
                   </div>
-                  <div className='w-[260px] h-[100%] bg-red-500'>
-
+                  <div className='w-[260px] h-[80%]  rounded-md flex items-center justify-between '>
+                    {
+                      TOPCLOTHES.includes(item.item.category) ?
+                        <div
+                          className={`w-[50%] h-full flex items-center justify-center  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                          <label htmlFor={`${index}`}></label>
+                          <select 
+                            value={item.size}  
+                            onChange={(e) => pressChangeSizeCartButton(item.c_id, e.target.value)} 
+                            name="size" 
+                            id={`${index}`} 
+                            style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }}>
+                                <option value="S" className="text-black">S</option>
+                                <option value="M" className="text-black">M</option>
+                                <option value="L" className="text-black">L</option>
+                                <option value="XL" className="text-black">XL</option>
+                                <option value="XXL" className="text-black">XXL</option>
+                          </select>
+                          </div>
+                        :
+                      BOTTOMCLOTHES.includes(item.item.category) ?
+                        <div
+                          className={`w-[50%] h-full flex items-center justify-center  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                          <label htmlFor={`${index}`}></label>
+                          <select 
+                            value={item.size}  
+                            onChange={(e) => pressChangeSizeCartButton(item.c_id, e.target.value)} 
+                            name="size" 
+                            id={`${index}`} 
+                            style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }}>
+                                <option value="26" className="text-black">26</option>
+                                <option value="28" className="text-black">28</option>
+                                <option value="30" className="text-black">30</option>
+                                <option value="32" className="text-black">32</option>
+                                <option value="34" className="text-black">34</option>
+                          </select>
+                        </div>
+                        :
+                      SHOESCLOTHES.includes(item.item.category) ?
+                        <div
+                          className={`w-[50%] h-full flex items-center justify-center  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                          <label htmlFor={`${index}`}></label>
+                          <select 
+                            value={item.size}  
+                            onChange={(e) => pressChangeSizeCartButton(item.c_id, e.target.value)} 
+                            name="size" 
+                            id={`${index}`} 
+                            style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }}>
+                                <option value="220" className="text-black">220</option>
+                                <option value="230" className="text-black">230</option>
+                                <option value="240" className="text-black">240</option>
+                                <option value="250" className="text-black">250</option>
+                                <option value="260" className="text-black">260</option>
+                                <option value="270" className="text-black">270</option>
+                                <option value="280" className="text-black">280</option>
+                                <option value="290" className="text-black">290</option>
+                                <option value="300" className="text-black">300</option>
+                          </select>
+                        </div>
+                        :
+                      FREECLOTHES.includes(item.item.category) ?
+                        <div
+                          className={`w-[50%] h-full flex items-center justify-center ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                          {item.size}
+                        </div>
+                        :
+                        null
+                    }
+                    <div
+                          className={`w-[50%] h-full flex items-center justify-center gap-[10px] hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                        >
+                      <button 
+                        className="p-[5px] shadow-sm shadow-black rounded-md hover:bg-[#7732FF]"
+                        onClick={()=>{pressChangeQuantityCartButton(item.c_id, '-')}}
+                      >-</button>
+                        <span className="w-[10px] mx-[10px]">{item.quantity}</span>
+                      <button 
+                        className="p-[5px] shadow-sm shadow-black rounded-md hover:bg-[#7732FF]"
+                        onClick={()=>{pressChangeQuantityCartButton(item.c_id, '+')}}
+                      >+</button>
+                          </div>
                   </div>
                 </div>
                 <div className={`w-[10%] h-[40%] flex items-center justify-center border-l ${darkMode ? 'border-l-[#121212]' : 'border-l-[#dde0e3]'} text-[14px]`}>
@@ -263,25 +412,19 @@ const MyCartComponent = () => {
               <div className={`w-[30%] h-[100%] flex flex-col  justify-center gap-[10px] ${darkMode ? 'bg-[#121212]' : 'bg-[#F7F8F9]'}  py-[20px] px-[40px]`}>
                 <div className='flex items-center justify-between'>
                   <span>주문 상품 수</span>
-                  <span>{checkedCount}
+                  <span>{totalQuantity}
                     <span>개</span>
                   </span>
                 </div>
                 <div className='flex items-center justify-between'>
                   <span>총 상품 가격</span>
-                  <span>1,539,000
+                  <span>{totalPrice}
                     <span>원</span>
                   </span>
                 </div>
                 <div className='flex items-center justify-between'>
                   <span>상품 할인</span>
-                  <span>-850,000
-                    <span>원</span>
-                  </span>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <span>쿠폰할인 할인</span>
-                  <span>-20,670
+                  <span>{totalPrice - totalDiscount}
                     <span>원</span>
                   </span>
                 </div>
@@ -301,7 +444,7 @@ const MyCartComponent = () => {
               <div className='flex-1 flex flex-col items-end justify-center p-[20px]'>
                 <div className='font-bold'>
                   <span className='mr-[10px] text-[19px]'>최종구매가</span>
-                  <span className='text-[24px]'>668,300
+                  <span className='text-[24px]'>{totalDiscount}
                     <span>원</span>
                   </span>
                 </div>

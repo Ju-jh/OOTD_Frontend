@@ -19,6 +19,7 @@ interface AuthContextProps {
   photo: string;
   name: string;
   loginPlatform: string;
+  generatedPlatform: { [key: string]: string | null }[];
   setIsLogined: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -32,7 +33,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [email, setEmail] = useState('');
   const [photo, setPhoto] = useState('/photo.png');
   const [name, setName] = useState('');
-  const [loginPlatform, setLoginPlatform] = useState('')
+  const [loginPlatform, setLoginPlatform] = useState('');
+  const [generatedPlatform, setGeneratedPlatform] = useState([]);
 
   useEffect(() => {
     axios
@@ -49,6 +51,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           setPhoto(response.data.user.photo)
           setName(response.data.user.name)
           setLoginPlatform(response.data.user.loginPlatform)
+          setGeneratedPlatform(response.data.user.generatedPlatform)
         } else {
           setIsLogined(false);
         }
@@ -59,7 +62,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, [isLogined, photo]);
 
   return (
-    <AuthContext.Provider value={{ isLogined, setIsLogined, email, photo, name, loginPlatform }}>
+    <AuthContext.Provider value={{ isLogined, setIsLogined, email, photo, name, loginPlatform, generatedPlatform}}>
       {children}
     </AuthContext.Provider>
   );
