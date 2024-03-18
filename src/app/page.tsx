@@ -5,7 +5,6 @@
 import AdvertisementContainer from '@/containers/home/advertisement/ssr';
 import CategoryContainer from '@/containers/home/category/ssr';
 import ProductRankingContainer from '@/containers/home/productRanking/ssr';
-import { useDarkMode } from '@/hooks/context/darkMode';
 
 
 
@@ -32,6 +31,7 @@ async function fetchProductRankingServerRenderedData() {
   // { cache: 'no-store' } <-- 캐시 강제 (isr)
   // const data = await response.json();
   // return data.serverRenderedData;
+
   const ProductRankingData = [
     {
       type: 'popular',
@@ -55,11 +55,12 @@ export default async function HomePage() {
   const AdvertisementData = await fetchAdvertisementServerRenderedData();
   const CategoryData = await fetchCategoryServerRenderedData();
   const ProductRankingData = await fetchProductRankingServerRenderedData();
+
   return (
     <main className='Main flex flex-col w-[100%] min-h-[1300px] pt-[80px]'>
       <AdvertisementContainer serverRenderedData={AdvertisementData}/>
       <CategoryContainer serverRenderedData={CategoryData}/>
-      <ProductRankingContainer serverRenderedData={ProductRankingData}/>
+      <ProductRankingContainer serverRenderedData={ProductRankingData} />
     </main>
   );
 };
