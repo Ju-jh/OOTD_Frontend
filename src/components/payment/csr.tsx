@@ -7,10 +7,13 @@ import { EVENT_COLOR } from "@/constants/color";
 import { faChevronDown, faChevronRight, faComment } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RequestPayParams, RequestPayResponse } from "iamport-typings";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useSearchParams } from 'next/navigation'
+import { useModal } from "@/hooks/context/modal";
+import { BOTTOMCLOTHES, FREECLOTHES, SHOESCLOTHES, TOPCLOTHES } from "@/constants/array";
+import { useDarkMode } from "@/hooks/context/darkMode";
 
 interface Item {
     c_id: number;
@@ -20,30 +23,32 @@ interface Item {
         category: string;
         brand: string;
         title: string;
-        discount: number;
-        price: number;
+        discount: string;
+        price: string;
     }
+    quantity: number;
+    size: string;
 }
 
 export default function PaymentWindowComponent() {
     const searchParams = useSearchParams()
     const carts = searchParams.get("carts")
     const [isCartArray, setIsCartArray] = useState<Item[]>([])
+    const ShippingAddress = useRef<HTMLButtonElement>(null)
+    const { openModal, isModalOpen } = useModal()
+    const darkMode = useDarkMode()
 
     // 바로구매 누를시 들어오는 데이터값
     const [isPG, setIsPG] = useState("")
     const [isPay, setIsPay] = useState("card")
     const [isAmount, setIsAmount] = useState(1000)
-    const [isName, setIsName] = useState("이기웅")
-    const [isTel, setIsTel] = useState("01039327126")
-    const [isEmail, setIsEmail] = useState("sg4582@naver.com")
-    const [isAddr, setIsAddr] = useState("신사동 661-16")
-    const [isPostcode, setIsPostcode] = useState("06018")
+    const [isName, setIsName] = useState("")
+    const [isAddr, setIsAddr] = useState('');
+    const [isDetailAddr, setIsDetailAddr] = useState('');
+    const [isTel, setIsTel] = useState("");
+    const [isEmail, setIsEmail] = useState('');
+    const [isPostcode, setIsPostcode] = useState("")
     // 요청값저장
-    const [isUserName, setIsUserName] = useState(isName)
-    const [isUserTel, setIsUserTel] = useState(isTel)
-    const [isUserEmail, setIsUserEmail] = useState(isEmail)
-    const [isShippingAddr, setIsShippingAddr] = useState(isAddr)
     const [isTotal, setIsTotal] = useState(0)
     const [isTotalPrice, setIsTotalPrice] = useState(0)
     const [isTotalDiscount, setIsTotalDiscount] = useState(0)
@@ -79,71 +84,86 @@ export default function PaymentWindowComponent() {
 
     const userDataModifyBtn = () => {
         if (isUser) {
-            setIsUser(false)
-        } else {
-            setIsUser(true)
-            setIsName(isUserName)
-            setIsTel(isUserTel)
-            setIsEmail(isUserEmail)
-        }
-    }
-
-    const shippingDataModifyBtn = () => {
-        if (isShipping) {
-            setIsShipping(false)
-        } else {
-            setIsShipping(true)
-            setIsAddr(isShippingAddr)
-            setIsEmail(isUserEmail)
-        }
-    }
-
-    const nameChange = (event: { target: { value: any; }; }) => {
-        setIsUserName(event.target.value);
-    };
-
-    const phonenumberChange = (event: { target: { value: any; }; }) => {
-        setIsUserTel(event.target.value);
-    };
-
-    const emailChange = (event: { target: { value: any; }; }) => {
-        setIsUserEmail(event.target.value);
-    };
-
-    const addrChange = (event: { target: { value: SetStateAction<string>; }; }) => {
-        setIsShippingAddr(event.target.value);
-    }
-
-    const order = (success: boolean) => {
-        axios
-            .post("/api/order/requst", {}, {
+            console.log(isTel);
+            axios.post("/api/order/userupdate", { isName, isTel, isEmail }, {
                 headers: {
                     "Content-Type": "application/json",
                 },
                 withCredentials: true,
             })
-            .then((response) => {
-                console.log(response.data);
-            })
+                .then((response) => {
+                    console.log(response.data);
+                })
+            setIsUser(false)
+        } else {
+            setIsUser(true)
+        }
     }
 
-    const test = () => {
-        axios.delete("/api/order/cancel", {
+    const shippingDataModifyBtn = () => {
+        if (isShipping) {
+            axios.post("/api/order/useraddress", { isAddr, isDetailAddr }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            })
+                .then((response) => {
+                    console.log(response.data);
+                })
+            setIsShipping(false)
+        } else {
+            setIsShipping(true)
+        }
+    }
+
+    const nameChange = (e: string) => {
+        setIsName(e);
+    };
+
+    const phonenumberChange = (e: string) => {
+        setIsTel(e);
+    };
+
+    const emailChange = (e: string) => {
+        setIsEmail(e);
+    };
+
+    const addrChange = (e: SetStateAction<string>) => {
+        setIsDetailAddr(e);
+    }
+
+    const cartSizeChangeBtn = (cartId: any, value: string, index: number) => {
+        axios.post("/api/order/sizechange", { cartId, value }, {
             headers: {
                 "Content-Type": "application/json",
-            },
-            data: {
-                oderid: 1
             },
             withCredentials: true,
         })
             .then((response) => {
-                console.log(response.data);
+                const updateIsCartArray = [...isCartArray];
+                updateIsCartArray[index].size = response.data.order.size;
+                setIsCartArray(updateIsCartArray);
+            })
+    }
+
+    const cartQuantityChangeBtn = (cartId: any, value: string, index: number) => {
+        axios.post("/api/order/quantitychange", { cartId, value }, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            withCredentials: true,
+        })
+            .then((response) => {
+                const updateIsCartArray = [...isCartArray];
+                updateIsCartArray[index].quantity = response.data.order.quantity;
+                setIsCartArray(updateIsCartArray);
+                totalPriceDiscount(updateIsCartArray)
             })
     }
 
     const onClickPayment = () => {
-        order(true)
+        order(true,isCartArray)
         if (isCancel && isBuy) {
             if (!window.IMP) return;
             /* 1. 가맹점 식별하기 */
@@ -176,63 +196,67 @@ export default function PaymentWindowComponent() {
         const { success, error_msg } = response;
 
         if (success) {
-            order(success)
+            order(success,isCartArray)
             alert("결제 성공");
         } else {
             alert(`결제 실패: ${error_msg}`);
         }
     }
 
+    const order = (success: boolean, categoryArray: Item[]) => {
+        axios
+            .post("/api/order/requst", {categoryArray}, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                console.log(response.data);
+            })
+    }
+
+    const orderItems = (str: string, cartArray: any[]) => {
+        axios.get(`/api/order/${str}`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            params: {
+                cart: cartArray
+            },
+            withCredentials: true,
+        })
+            .then((response) => {
+                setIsCartArray(response.data[0])
+                setIsName(response.data[1].name);
+                setIsTel(response.data[1].phone_number)
+                setIsEmail(response.data[1].email)
+                setIsAddr(response.data[1].address)
+                setIsDetailAddr(response.data[1].detailAddress)
+                totalPriceDiscount(response.data[0])
+            })
+    }
+
+    const totalPriceDiscount = (cartArray: any) => {
+        const total = (cartArray).map((item: any) => parseInt(item.item.price) * item.quantity - parseInt(item.item.discount) * item.quantity)
+            .reduce((total: any, price: any) => total + price, 0);
+        const totalPrice = (cartArray).map((item: any) => parseInt(item.item.price) * item.quantity)
+            .reduce((total: any, price: any) => total + price, 0);
+        const totalDiscount = (cartArray).map((item: any) => parseInt(item.item.discount) * item.quantity)
+            .reduce((total: any, price: any) => total + price, 0);
+        setIsTotal(total);
+        setIsTotalPrice(totalPrice);
+        setIsTotalDiscount(totalDiscount);
+    }
+
     useEffect(() => {
         const cartArray = JSON.parse(carts!)
         if (cartArray[0] == "cart") {
-            axios.get("/api/order/carts", {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                params: {
-                    cart: cartArray[1]
-                },
-                withCredentials: true,
-            })
-                .then((response) => {
-                    setIsCartArray(response.data)
-                    const total = (response.data).map((item: any) => parseInt(item.item.price) - parseInt(item.item.discount))
-                        .reduce((total: any, price: any) => total + price, 0);
-                    const totalPrice = (response.data).map((item: any) => parseInt(item.item.price) + parseInt(item.item.price))
-                        .reduce((total: any, price: any) => total + price, 0);
-                    const totalDiscount = (response.data).map((item: any) => parseInt(item.item.discount) + parseInt(item.item.discount))
-                        .reduce((total: any, price: any) => total + price, 0);
-                    setIsTotal(total);
-                    setIsTotalPrice(totalPrice);
-                    setIsTotalDiscount(totalDiscount);
-                })
+            orderItems("carts", cartArray[1])
         } else {
-            axios.get("/api/order/item", {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                params: {
-                    cart: cartArray[1]
-                },
-                withCredentials: true,
-            })
-                .then((response) => {
-                    console.log(response.data);
-                    setIsCartArray(response.data)
-                    const total = (response.data).map((item: any) => parseInt(item.item.price) - parseInt(item.item.discount))
-                        .reduce((total: any, price: any) => total + price, 0);
-                    const totalPrice = (response.data).map((item: any) => parseInt(item.item.price) + parseInt(item.item.price))
-                        .reduce((total: any, price: any) => total + price, 0);
-                    const totalDiscount = (response.data).map((item: any) => parseInt(item.item.discount) + parseInt(item.item.discount))
-                        .reduce((total: any, price: any) => total + price, 0);
-                    setIsTotal(total);
-                    setIsTotalPrice(totalPrice);
-                    setIsTotalDiscount(totalDiscount);
-                })
+            orderItems("items", cartArray[1])
         }
-
-    }, [carts])
+    }, [carts, isModalOpen])
 
     return (
         <div>
@@ -251,15 +275,15 @@ export default function PaymentWindowComponent() {
                                 <tbody>
                                     <tr>
                                         <td className="p-[10px]">이름</td>
-                                        {isUser ? <td><input value={isUserName} onChange={nameChange} type="text" /></td> : <td>{isName}</td>}
+                                        {isUser ? <td><input value={isName} onChange={e => nameChange(e.target.value)} type="text" className="border border-slate-300" /></td> : <td>{isName ? isName : "이름을 입력해주세요"}</td>}
                                     </tr>
                                     <tr>
                                         <td className="p-[10px]">연락처</td>
-                                        {isUser ? <td><input value={isUserTel} onChange={phonenumberChange} type="text" /></td> : <td>{isTel}</td>}
+                                        {isUser ? <td><input defaultValue={isTel} onChange={e => phonenumberChange(e.target.value)} type="text" className="border border-slate-300" /></td> : <td>{isTel ? isTel : "전화번호을 입력해주세요"}</td>}
                                     </tr>
                                     <tr>
                                         <td className="p-[10px]">이메일</td>
-                                        {isUser ? <td><input value={isUserEmail} onChange={emailChange} type="text" /></td> : <td>{isEmail}</td>}
+                                        {isUser ? <td><input value={isEmail} onChange={e => emailChange(e.target.value)} type="text" className="border border-slate-300" /></td> : <td>{isEmail ? isEmail : "이메일을 입력해주세요"}</td>}
                                     </tr>
                                 </tbody>
                             </table>
@@ -270,19 +294,43 @@ export default function PaymentWindowComponent() {
                                 <button onClick={shippingDataModifyBtn} className="p-[8px] text-[12px] border">{isShipping ? "배송정보 자장" : "배송정보 변경"}</button>
                             </div>
                             <div className="mb-[25px]">
-                                <p className="font-bold text-[25px] mb-[10px]">{isName}</p>
-                                {isShipping ? <input value={isShippingAddr} onChange={addrChange} type="text" className="w-full mb-[10px]" /> : <p className="mb-[10px]">{isShippingAddr}</p>}
-                                {isShipping ? <input value={isUserTel} onChange={phonenumberChange} type="text" className="w-full" /> : <p>{isTel}</p>}
+                                <p className="font-bold text-[25px] mb-[10px] pl-[10px]">{isName}</p>
+                                <table className="w-[100%]">
+                                    <tbody>
+                                        <tr>
+                                            {isShipping ?
+                                                <td className="flex w-[100%] p-[10px]">
+                                                    <input placeholder={"배달주소을 입력해주세요"} value={isAddr} onChange={(e) => setIsAddr(e.target.value)} type="text" onClick={() => { if (ShippingAddress !== null && ShippingAddress.current !== null) { ShippingAddress.current.click() } }} className="w-[75%] h-[25px] border border-slate-300" />
+                                                    <button ref={ShippingAddress} onClick={() => { openModal('ShippingAddressComponent') }}>주소 찾기</button></td> : <td className="p-[10px]">{isAddr ? isAddr : "배달주소을 입력해주세요"}</td>}
+                                        </tr>
+                                        <tr>
+                                            {isShipping ? <td className="p-[10px]"><input placeholder={"상세주소를 입력해주세요"} value={isDetailAddr} onChange={e => addrChange(e.target.value)} type="text" className="w-[75%] h-[25px] border border-slate-300" /></td> : <td className="p-[10px]">{isDetailAddr ? isDetailAddr : "상세주소를 입력해주세요"}</td>}
+                                        </tr>
+                                        <tr>
+                                            {isShipping ?
+                                                <td className="p-[10px]">
+                                                    <input
+                                                        placeholder={"전화번호을 입력해주세요"}
+                                                        defaultValue={isTel}
+                                                        onChange={e => phonenumberChange(e.target.value)}
+                                                        type="text"
+                                                        className="w-[75%] h-[25px] border border-slate-300" />
+                                                </td>
+                                                : <td className="p-[10px]">
+                                                    {isTel ? isTel : "전화번호을 입력해주세요"}
+                                                </td>}
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <div className="">
                                 <p className="text-[25px]">배송 요청사항</p>
                             </div>
                             <ul>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
+                                <li>문 앞</li>
+                                <li>직접 받고 부재 시 문앞</li>
+                                <li>경비실</li>
+                                <li>택배함</li>
                             </ul>
                         </div>
                     </div>
@@ -300,8 +348,92 @@ export default function PaymentWindowComponent() {
                                                 <div className="flex flex-col flex-1 text-[20px] pl-[5px]">
                                                     <p className="text-[20px] font-bold">{item.item.brand}</p>
                                                     <p className="my-[7px]">{item.item.title}</p>
-                                                    {/* 여기에 사이즈가 들어감 cart에 사이즈 없음
-                                                     <p className="mb-[7px]">{items[0]}</p> */}
+                                                    <div className='w-[200px] h-[30%] rounded-md flex items-center justify-between '>
+                                                        {
+                                                            TOPCLOTHES.includes(item.item.category) ?
+                                                                <div
+                                                                    className={`w-[50%] h-full flex items-center justify-center  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                                                                >
+                                                                    <label htmlFor={`${index}`}></label>
+                                                                    <select
+                                                                        value={item.size}
+                                                                        onChange={(e) => cartSizeChangeBtn(item.c_id, e.target.value, index)}
+                                                                        name="size"
+                                                                        id={`${index}`}
+                                                                        style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }}>
+                                                                        <option value="S" className="text-black">S</option>
+                                                                        <option value="M" className="text-black">M</option>
+                                                                        <option value="L" className="text-black">L</option>
+                                                                        <option value="XL" className="text-black">XL</option>
+                                                                        <option value="XXL" className="text-black">XXL</option>
+                                                                    </select>
+                                                                </div>
+                                                                :
+                                                                BOTTOMCLOTHES.includes(item.item.category) ?
+                                                                    <div
+                                                                        className={`w-[50%] h-full flex items-center justify-center  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                                                                    >
+                                                                        <label htmlFor={`${index}`}></label>
+                                                                        <select
+                                                                            value={item.size}
+                                                                            onChange={(e) => cartSizeChangeBtn(item.c_id, e.target.value, index)}
+                                                                            name="size"
+                                                                            id={`${index}`}
+                                                                            style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }}>
+                                                                            <option value="26" className="text-black">26</option>
+                                                                            <option value="28" className="text-black">28</option>
+                                                                            <option value="30" className="text-black">30</option>
+                                                                            <option value="32" className="text-black">32</option>
+                                                                            <option value="34" className="text-black">34</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    :
+                                                                    SHOESCLOTHES.includes(item.item.category) ?
+                                                                        <div
+                                                                            className={`w-[50%] h-full flex items-center justify-center  hover:cursor-pointer hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                                                                        >
+                                                                            <label htmlFor={`${index}`}></label>
+                                                                            <select
+                                                                                value={item.size}
+                                                                                onChange={(e) => cartSizeChangeBtn(item.c_id, e.target.value, index)}
+                                                                                name="size"
+                                                                                id={`${index}`}
+                                                                                style={{ backgroundColor: 'transparent', border: 'none', padding: '5px', fontSize: '16px' }}>
+                                                                                <option value="220" className="text-black">220</option>
+                                                                                <option value="230" className="text-black">230</option>
+                                                                                <option value="240" className="text-black">240</option>
+                                                                                <option value="250" className="text-black">250</option>
+                                                                                <option value="260" className="text-black">260</option>
+                                                                                <option value="270" className="text-black">270</option>
+                                                                                <option value="280" className="text-black">280</option>
+                                                                                <option value="290" className="text-black">290</option>
+                                                                                <option value="300" className="text-black">300</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        :
+                                                                        FREECLOTHES.includes(item.item.category) ?
+                                                                            <div
+                                                                                className={`w-[50%] h-full flex items-center justify-center ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                                                                            >
+                                                                                {item.size}
+                                                                            </div>
+                                                                            :
+                                                                            null
+                                                        }
+                                                        <div
+                                                            className={`w-[50%] h-[30%] flex items-center justify-center gap-[10px] hover:rounded-md ${darkMode ? '' : 'hover:bg-[#F7F8F9]'}`}
+                                                        >
+                                                            <button
+                                                                className="p-[5px] shadow-sm shadow-black rounded-md hover:bg-[#7732FF]"
+                                                                onClick={() => { cartQuantityChangeBtn(item.c_id, '-', index) }}
+                                                            >-</button>
+                                                            <span className="w-[10px] mx-[10px]">{item.quantity}</span>
+                                                            <button
+                                                                className="p-[5px] shadow-sm shadow-black rounded-md hover:bg-[#7732FF]"
+                                                                onClick={() => { cartQuantityChangeBtn(item.c_id, '+', index) }}
+                                                            >+</button>
+                                                        </div>
+                                                    </div>
                                                     <div className="flex items-center h-full text-[20px] font-bold">
                                                         <p>{(parseInt(item.item.price) - parseInt(item.item.discount)).toLocaleString()}원</p>
                                                     </div>
@@ -480,8 +612,7 @@ export default function PaymentWindowComponent() {
                                 </table>
                             </div>
                         </div>
-                        <button onClick={onClickPayment} style={{ backgroundColor: EVENT_COLOR }} className="w-full py-[15px] border rounded-lg text-white text-[20px]">가격원 결제하기</button>
-                        {/* 주문 취소 테스트버튼  <button onClick={test} style={{ backgroundColor: EVENT_COLOR }} className="w-full py-[15px] border rounded-lg text-white text-[20px]">주문 취소</button> */}
+                        <button onClick={onClickPayment} style={{ backgroundColor: EVENT_COLOR }} className="w-full py-[15px] border rounded-lg text-white text-[20px]">{isTotal.toLocaleString()}원 결제하기</button>
                     </div>
                 </div>
             </div>

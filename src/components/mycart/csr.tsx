@@ -47,9 +47,6 @@ const MyCartComponent = () => {
     .filter(key => checkedItems[parseInt(key)])
     .map(key => cartArray[parseInt(key)]);
 
-  // 기웅이가 추가한 코드 ()
-  const [isCartId, setIsCartId] = useState<Number[]>([])
-
   const isAllchecked = () => {
     return Object.values(checkedItems).every((value) => value);
   };
@@ -83,10 +80,6 @@ const MyCartComponent = () => {
       .then((response) => {
         const sortedCartArray = response.data.data.sort((a: { createdAt: string | number | Date }, b: { createdAt: string | number | Date }) => (new Date(a.createdAt) as any) - (new Date(b.createdAt) as any));
         setCartArray(sortedCartArray);
-
-        // 기웅이가 추가한 코드 (c_id로만 이루어진 배열생성)
-        const car = response.data.data.map((item: { c_id: any }) => [item.c_id]).flat();
-        setIsCartId(car)
 
         const newInitialCheckedItems: Record<number, boolean> = {};
         response.data.data.forEach((_: any, index: number) => {
@@ -457,7 +450,7 @@ const MyCartComponent = () => {
             href={{
               pathname: '/payment',
               query: {
-                carts: JSON.stringify(["cart",isCartId]),
+                carts: JSON.stringify(["cart", cartArray]),
               },
             }}
             className='text-center'

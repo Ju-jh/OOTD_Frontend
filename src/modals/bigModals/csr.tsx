@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import Image from 'next/image';
 import React, { useRef, useState } from 'react';
+import DaumPostcode from 'react-daum-postcode';
+import { useEffect } from 'react';
 
 export const PhotoChangeModalComponent = () => {
   const { photo } = useAuth()
@@ -26,18 +28,20 @@ export const PhotoChangeModalComponent = () => {
       formData.append('images', selectedFile);
 
       try {
-        const response = await axios.post(CHANGE_IMAGE , formData, {
+        const response = await axios.post(CHANGE_IMAGE, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
           withCredentials: true,
         });
 
-        if (response) { 
+        if (response) {
           closeModal();
           openModal('ChangePhotoAlertComponent')
         }
       } catch (error) {
+        console.log(error);
+
       }
     }
   };
@@ -75,9 +79,9 @@ export const PhotoChangeModalComponent = () => {
               alt='SelectedProfileImage'
               width={500}
               height={500}
-              style={{ objectFit: 'cover', width: '100%', height: '100%' }}/>
-            ) : (
-            <Image 
+              style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+          ) : (
+            <Image
               src={photo}
               alt='OriginalProfileImage'
               width={500}
@@ -120,10 +124,10 @@ export const PhotoChangeModalComponent = () => {
             )}
             <label htmlFor='fileInput' className='cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-md r-0'>
               파일 선택
-            </label>  
+            </label>
           </div>
         </div>
-      <div className='w-[100%] h-[70px] overflow-hidden flex text-[20px]'>
+        <div className='w-[100%] h-[70px] overflow-hidden flex text-[20px]'>
           <button onClick={closeModal} className='w-[50%] h-[100%] bg-[#333333] font-bold text-white'>닫기</button>
           <button onClick={handleConfirm} className='flex-1 bg-[#111111] font-bold text-white'>확인</button>
         </div>
@@ -151,13 +155,13 @@ export const PhoneNumberChangeModalComponent = () => {
     }
   };
 
-  const handleVerfiyNumberChange = (e : any) => {
+  const handleVerfiyNumberChange = (e: any) => {
     const newEmailVerifyNumber = e.target.value;
     setVerifyNumber(newEmailVerifyNumber);
   };
 
   const clickSendVerfiyCode = async (phoneNumber: string) => {
-    console.log(selectedPrefix+phoneNumber)
+    console.log(selectedPrefix + phoneNumber)
   };
 
   const handleConfirm = async () => {
@@ -219,7 +223,7 @@ export const PhoneNumberChangeModalComponent = () => {
                 onClick={() => clickSendVerfiyCode(phoneNumber)}
                 disabled={isPhoneNumberVerified || isVerifyCodeSend}
               >
-                <span className='text-[14px] font-semibold text-black'>전송</span> 
+                <span className='text-[14px] font-semibold text-black'>전송</span>
               </button>
             </div>
             <p className='w-[100%] mt-[40px] text-start text-[13px] mb-[5px] text-black'>인증번호</p>
@@ -236,7 +240,7 @@ export const PhoneNumberChangeModalComponent = () => {
             </div>
           </div>
         </div>
-      <div className='w-[100%] h-[70px] overflow-hidden flex text-[20px]'>
+        <div className='w-[100%] h-[70px] overflow-hidden flex text-[20px]'>
           <button onClick={closeModal} className='w-[50%] h-[100%] bg-[#333333] font-bold text-white'>닫기</button>
           <button onClick={handleConfirm} className='flex-1 bg-[#111111] font-bold text-white'>인증</button>
         </div>
@@ -545,6 +549,65 @@ export const CardInstallmentComponent = () => {
         </div>
         <div className='relative h-[700px] mx-[5%] mb-[5%]'>
           <Image src={'https://image-cdn.trenbe.com/1000/1704674983001-0cbfc70e-182b-49cb-9a7d-0fa3ab0fc561.jpg'} alt={''} fill></Image>
+        </div>
+      </div>
+    </div>
+  );
+
+};
+
+export const ShippingAddressComponent = () => {
+  const { closeModal } = useModal();
+  const [isdata, setIsData] = useState("")
+
+  const handleComplete = (data: any) => {
+    axios.post( "api/order/upaddress", data , {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      withCredentials: true,
+    })
+    setIsData(data.address)
+  };
+
+  const style = {
+    height: "450px"
+  }
+  
+  useEffect(() => {
+    if (isdata !== "") {
+      closeModal();
+    }
+  }, [isdata, closeModal]);
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(18, 18, 18, 0.8)',
+        position: 'fixed',
+        zIndex: 200,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden'
+      }}
+    >
+      <div
+        className='mx-auto w-[500px] h-[600px] overflow-hidden bg-white flex flex-col justify-between'
+        style={{
+          backgroundColor: 'white',
+          opacity: '1',
+          zIndex: 210,
+        }}
+      >
+        <div className='flex items-center justify-between p-[40px]'>
+          <span className='text-black text-[20px] font-bold'>도로명 주소 검색</span>
+          <button onClick={closeModal} className='text-black text-[20px] font-bold'><FontAwesomeIcon icon={faX} /></button>
+        </div>
+        <div className='relative h-[600px] mx-[5%] mb-[5%]'>
+          <DaumPostcode style={style} onComplete={handleComplete} />
         </div>
       </div>
     </div>
