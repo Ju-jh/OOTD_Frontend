@@ -239,7 +239,7 @@ export default function ItemOrderComponent(itemList: any) {
                             href={{
                                 pathname: '/payment',
                                 query: {
-                                    carts: JSON.stringify(["item",itemList.itemList.i_id]),
+                                    carts: JSON.stringify(["item",itemDetail]),
                                 },
                             }}
                             className='text-center w-[48%]'

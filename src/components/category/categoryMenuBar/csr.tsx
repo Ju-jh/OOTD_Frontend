@@ -68,43 +68,43 @@ export default function CategoryMenuBarComponent() {
                     {isCategory ? <FontAwesomeIcon className="py-[15px] w-[15px] h-[15px]" icon={faChevronUp} /> : <FontAwesomeIcon className="py-[15px] w-[15px] h-[15px]" icon={faChevronDown} />}
                 </div>
                 <div className={`overflow-hidden transition-all duration-500 ${isCategory ? 'max-h-[700px]' : 'max-h-0'}`}>                    <ul className="ml-[10px]">
-                    <Link href={"/category/outer"}>
+                    <Link href={"/category/outer/1"}>
                         <li className="mb-[20px]">outer</li>
                     </Link>
-                    <Link href={"/category/top"}>
+                    <Link href={"/category/top/1"}>
                         <li className="mb-[20px]">top</li>
                     </Link>
-                    <Link href={"/category/pants"}>
+                    <Link href={"/category/pants/1"}>
                         <li className="mb-[20px]">pants</li>
                     </Link>
-                    <Link href={"/category/shoes"}>
+                    <Link href={"/category/shoes/1"}>
                         <li className="mb-[20px]">shoes</li>
                     </Link>
-                    <Link href={"/category/hat"}>
+                    <Link href={"/category/hat/1"}>
                         <li className="mb-[20px]">hat</li>
                     </Link>
-                    <Link href={"/category/bag"}>
+                    <Link href={"/category/bag/1"}>
                         <li className="mb-[20px]">bag</li>
                     </Link>
-                    <Link href={"/category/accessary"}>
+                    <Link href={"/category/accessary/1"}>
                         <li className="mb-[20px]">accessary</li>
                     </Link>
-                    <Link href={"/category/headwear"}>
+                    <Link href={"/category/headwear/1"}>
                         <li className="mb-[20px]">headwear</li>
                     </Link>
-                    <Link href={"/category/onepiece"}>
+                    <Link href={"/category/onepiece/1"}>
                         <li className="mb-[20px]">onepiece</li>
                     </Link>
-                    <Link href={"/category/skirt"}>
+                    <Link href={"/category/skirt/1"}>
                         <li className="mb-[20px]">skirt</li>
                     </Link>
-                    <Link href={"/category/socks"}>
+                    <Link href={"/category/socks/1"}>
                         <li className="mb-[20px]">socks</li>
                     </Link>
-                    <Link href={"/category/sports"}>
+                    <Link href={"/category/sports/1"}>
                         <li className="mb-[20px]">sports</li>
                     </Link>
-                    <Link href={"/category/underwear"}>
+                    <Link href={"/category/underwear/1"}>
                         <li className="mb-[20px]">underwear</li>
                     </Link>
                 </ul>
